@@ -18,7 +18,7 @@ function Board(){
                 <Block 
                     block = {block+1} 
                     handleCellClicked = {handleCellClicked}
-                    
+                    chosenCells = {chosenCells}
                     >
                     
                 </Block>
@@ -33,6 +33,5 @@ function Board(){
     function handleCellClicked(block: any, cell: any){
         setChosenCell(!chosenCell)
         setChosenCells([...chosenCells, {block: block, cell}])
-        console.log("B:" + block + " C:" + cell)
     }
 }export default Board
