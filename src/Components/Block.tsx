@@ -14,7 +14,6 @@ function Block(props){
                     cell = {cellNr+1} 
                     handleCellClicked = {props.handleCellClicked}
                     chosenCells = {props.chosenCells}
-                    setChosenCells = {props.setChosenCells}
                     >
 
                     </Cell>

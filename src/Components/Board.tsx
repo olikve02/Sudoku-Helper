@@ -1,24 +1,29 @@
 import Grid from "@mui/material/Grid"
 import '../App.css'
 import Block from "./Block"
-import { useState } from "react"
-import { Box, Button } from "@mui/material"
 
-function Board(){
+type BoardProps = {
+    chosenCells: {block: number, cell: number, candidates: number[]}[],
+    handleCellClicked: (block: number, cell: number) => void,
+}
+
+
+function Board(props: BoardProps){
     const blocks = [0,1,2,3,4,5,6,7,8]
-    const [chosenCells, setChosenCells] = useState<{block: number, cell: number}[]>([])
-    const [chosenCell, setChosenCell] = useState(false)
 
     return(
         
-        <Grid container columns={3} sx={{borderStyle: "solid", aspectRatio: 1/1}}>
+        <Grid 
+        container
+        columns={3} 
+        className = "board">
 
         {blocks.map((block) => (
              <Grid key={block} size= {1}>
                 <Block 
                     block = {block+1} 
-                    handleCellClicked = {handleCellClicked}
-                    chosenCells = {chosenCells}
+                    handleCellClicked = {props.handleCellClicked}
+                    chosenCells = {props.chosenCells}
                     >
                     
                 </Block>
@@ -30,8 +35,5 @@ function Board(){
 
 
 
-    function handleCellClicked(block: any, cell: any){
-        setChosenCell(!chosenCell)
-        setChosenCells([...chosenCells, {block: block, cell}])
-    }
+   
 }export default Board

@@ -6,7 +6,7 @@ type CellProps = {
     block: number,
     cell: number,
     handleCellClicked: (block: number, cell: number) => void,
-    chosenCells: {block: number, cell: number}[],
+    chosenCells: {block: number, cell: number, candidates: number[]}[],
 }
 
 function Cell(props: CellProps){
@@ -15,24 +15,22 @@ function Cell(props: CellProps){
             props.block == chosenCell.block && props.cell == chosenCell.cell
         )))
 
-
     return(
         <Grid 
             onClick = {cellClicked} 
-            size = {1} className= {isChosen ? "sudoku-cell-chosen" : "sudoku-cell"} 
-            cell = {props.cell} 
-            block = {props.cell}
-            chosenCells = {props.chosenCells}
-            >
-            <Candidates></Candidates>
+            size = {1} className= {isChosen ? "sudoku-cell-chosen" : "sudoku-cell"}>
+
+            <Candidates 
+                chosenCells = {props.chosenCells}
+                cell = {props.cell}
+                block = {props.block}
+                ></Candidates>
       </Grid>
     )
     
     
     function cellClicked(){
         props.handleCellClicked(props.block, props.cell)     
-        //console.log("B: " + props.block + " C: " + props.cell + "Chosen: " + isChosen)
-
     }
 
 } export default Cell
