@@ -23,15 +23,12 @@ function Candidates(props: CandidatesProps){
             chosenCell.cell == props.cell
     )
 
-
     return(
 
         <Grid className = "sudoku-candidates" container columns={3}>
             {candidates.map((candidate) => (
                 <Grid size={1} key={candidate}>
-                  {cellData?.candidates?.includes(candidate + 1)
-                  ? candidate + 1 
-                  : ""
+                  {cellData?.candidates?.includes(candidate + 1) ? candidate + 1 : ""
                   }
                 </Grid>
             ))}

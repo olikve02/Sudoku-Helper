@@ -36,12 +36,9 @@ function App() {
 
   function handleButtonClicked(buttonNr: number){
     const newCandidates = chosenCells.map((cell) => (
-      {block: cell.block, cell: cell.cell, candidates: cell.candidates.push(buttonNr)}
-      
+      {block: cell.block, cell: cell.cell, candidates: [...cell.candidates, buttonNr]}
     ))
-
-    console.log(newCandidates)
-
+    setChosenCells(newCandidates)
   }
 }
 
