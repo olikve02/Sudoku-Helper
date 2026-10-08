@@ -1,10 +1,10 @@
 import { Box } from "@mui/material";
 import Board from "./Components/Board";
-import ButtonRow from "./Components/CandidateButtonRow";
+import ButtonRow from "./Components/Buttons/CandidateButtonRow";
 import { useState } from "react";
-import CandidateButtonRow from "./Components/CandidateButtonRow";
-import NumberButtonRow from "./Components/NumberButtonRow";
-import ClearSelectedCellsButton from "./Components/ClearSelectedCellsButton";
+import CandidateButtonRow from "./Components/Buttons/CandidateButtonRow";
+import NumberButtonRow from "./Components/Buttons/NumberButtonRow";
+import ClearSelectedCellsButton from "./Components/Buttons/ClearSelectedCellsButton";
 
 function App() {
   const [cells, setCells] = useState<
