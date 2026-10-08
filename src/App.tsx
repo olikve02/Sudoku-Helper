@@ -29,7 +29,9 @@ function App() {
         handleNumberButtonClicked={handleNumberButtonClicked}
       ></NumberButtonRow>
 
-      <ClearSelectedCellsButton></ClearSelectedCellsButton>
+      <ClearSelectedCellsButton
+        handleClearSelectedCellsClicked={handleClearSelectedCellsClicked}
+      ></ClearSelectedCellsButton>
     </Box>
   );
 
@@ -70,6 +72,18 @@ function App() {
     const newCells = cells.map((cell) => {
       if (cell.selected) {
         return { ...cell, value: buttonNr };
+      } else {
+        return cell;
+      }
+    });
+    setCells(newCells);
+  }
+
+  function handleClearSelectedCellsClicked() {
+    console.log("Bunger");
+    const newCells = cells.map((cell) => {
+      if (cell.selected) {
+        return { ...cell, selected: false };
       } else {
         return cell;
       }
