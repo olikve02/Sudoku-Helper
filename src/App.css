@@ -48,3 +48,7 @@
 .sudoku-candidates{
   aspect-ratio: 1/1;
 }
+
+.sudoku-value{
+  font-size: 2rem;
+}
