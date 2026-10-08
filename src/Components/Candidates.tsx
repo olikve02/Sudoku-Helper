@@ -1,38 +1,17 @@
-import Grid from "@mui/material/Grid"
-import '../App.css'
-import { useState } from "react"
+import Grid from "@mui/material/Grid";
+import "../App.css";
 
+function Candidates(props) {
+  const candidates = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-type CandidatesProps = {
-    block: number,
-    cell: number,
-    chosenCells: {
-        block: number,
-        cell: number,
-        candidates: number[]
-    }[]
-}
-
-function Candidates(props: CandidatesProps){
-
-    const candidates = [0,1,2,3,4,5,6,7,8]
-    
-    const cellData = props.chosenCells.find(
-        chosenCell => 
-            chosenCell.block == props.block &&
-            chosenCell.cell == props.cell
-    )
-
-    return(
-
-        <Grid className = "sudoku-candidates" container columns={3}>
-            {candidates.map((candidate) => (
-                <Grid size={1} key={candidate}>
-                  {cellData?.candidates?.includes(candidate + 1) ? candidate + 1 : ""
-                  }
-                </Grid>
-            ))}
+  return (
+    <Grid className="sudoku-candidates" container columns={3} size={9}>
+      {candidates.map((candidate) => (
+        <Grid size={1} key={candidate} className="candidate">
+          {props.candidates.includes(candidate) ? candidate : ""}
         </Grid>
-    )
-
-}export default Candidates
+      ))}
+    </Grid>
+  );
+}
+export default Candidates;
