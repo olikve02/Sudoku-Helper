@@ -80,7 +80,6 @@ function App() {
   }
 
   function handleClearSelectedCellsClicked() {
-    console.log("Bunger");
     const newCells = cells.map((cell) => {
       if (cell.selected) {
         return { ...cell, selected: false };
