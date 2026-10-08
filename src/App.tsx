@@ -4,6 +4,7 @@ import ButtonRow from "./Components/CandidateButtonRow";
 import { useState } from "react";
 import CandidateButtonRow from "./Components/CandidateButtonRow";
 import NumberButtonRow from "./Components/NumberButtonRow";
+import ClearSelectedCellsButton from "./Components/ClearSelectedCellsButton";
 
 function App() {
   const [cells, setCells] = useState<
@@ -27,6 +28,8 @@ function App() {
       <NumberButtonRow
         handleNumberButtonClicked={handleNumberButtonClicked}
       ></NumberButtonRow>
+
+      <ClearSelectedCellsButton></ClearSelectedCellsButton>
     </Box>
   );
 
