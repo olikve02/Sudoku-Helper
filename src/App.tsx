@@ -1,12 +1,13 @@
 import { Box } from "@mui/material";
 import Board from "./Components/Board";
-import ButtonRow from "./Components/Buttons/CandidateButtonRow";
 import { useState } from "react";
 import CandidateButtonRow from "./Components/Buttons/CandidateButtonRow";
 import NumberButtonRow from "./Components/Buttons/NumberButtonRow";
 import ClearSelectedCellsButton from "./Components/Buttons/ClearSelectedCellsButton";
+import ToggleSelectModeButton from "./Components/Buttons/ToggleSelectModeButton";
 
 function App() {
+  const [selectMultipleCells, setSelectMultipleCells] = useState(false);
   const [cells, setCells] = useState<
     {
       row: number;
@@ -32,17 +33,37 @@ function App() {
       <ClearSelectedCellsButton
         handleClearSelectedCellsClicked={handleClearSelectedCellsClicked}
       ></ClearSelectedCellsButton>
+
+      <ToggleSelectModeButton
+        handleSelectModeClicked={handleSelectModeClicked}
+      ></ToggleSelectModeButton>
     </Box>
   );
 
   function handleCellClicked(row: number, cell: number) {
-    const newCells = cells.map((cellState) => {
-      if (cellState.row == row && cellState.cell == cell) {
-        return { ...cellState, selected: !cellState.selected };
-      } else {
-        return cellState;
-      }
-    });
+    var newCells = cells;
+    //Check if select multiple cells mode is on
+    if (!selectMultipleCells) {
+      console.log("Select multiple cells on");
+      newCells = cells.map((cellState) => {
+        if (cellState.row == row && cellState.cell == cell) {
+          return { ...cellState, selected: true };
+        } else {
+          return { ...cellState, selected: false };
+        }
+      });
+    } else {
+      //Select multiple cells on
+      console.log("Select multiple cells off");
+
+      newCells = cells.map((cellState) => {
+        if (cellState.row == row && cellState.cell == cell) {
+          return { ...cellState, selected: !cellState.selected };
+        } else {
+          return cellState;
+        }
+      });
+    }
 
     setCells(newCells);
   }
@@ -88,6 +109,10 @@ function App() {
       }
     });
     setCells(newCells);
+  }
+
+  function handleSelectModeClicked() {
+    setSelectMultipleCells(!selectMultipleCells);
   }
 }
 
