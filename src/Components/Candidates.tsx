@@ -1,17 +1,19 @@
-import Grid from "@mui/material/Grid";
-import "../App.css";
+type CandidatesProps = {
+  candidates: number[];
+};
 
-function Candidates(props) {
+function Candidates(props: CandidatesProps) {
   const candidates = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   return (
-    <Grid className="sudoku-candidates" container columns={3} size={9}>
+    <div className="sudoku-candidates">
       {candidates.map((candidate) => (
-        <Grid size={1} key={candidate} className="candidate">
+        <div className="candidate" key={candidate}>
           {props.candidates.includes(candidate) ? candidate : ""}
-        </Grid>
+        </div>
       ))}
-    </Grid>
+    </div>
   );
 }
+
 export default Candidates;
