@@ -8,7 +8,7 @@ function ButtonRow(props) {
         <button
           key={button}
           onClick={() => props.handleNumberButtonClicked(button + 1)}
-          className="button"
+          className="number-button"
         >
           {button + 1}
         </button>

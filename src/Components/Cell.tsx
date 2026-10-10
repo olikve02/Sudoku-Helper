@@ -18,7 +18,7 @@ function Cell(props: CellPropsType) {
       className={`sudoku-cell 
         ${props.row == 4 || props.row == 7 ? "border-top-thick" : ""} 
         ${props.cell == 4 || props.cell == 7 ? "border-left-thick" : ""}
-        ${props.selected ? "selected" : ""}`}
+        ${props.selected ? "cell-selected" : ""}`}
       onClick={() => props.handleCellClicked(props.row, props.cell)}
     >
       {props.value ? (

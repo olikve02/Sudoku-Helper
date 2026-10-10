@@ -22,13 +22,22 @@ function App() {
     <Box className="screen-container">
       <Board cells={cells} handleCellClicked={handleCellClicked}></Board>
       <Box className="icon-row">
-        <Eraser onClick={() => handleClearSelectedCellsClicked()} />
+        <Eraser
+          className="icon-button"
+          onClick={() => handleClearSelectedCellsClicked()}
+        />
 
-        <Grid2x2Check onClick={() => handleSelectModeClicked()} />
+        <Grid2x2Check
+          className={`icon-button ${selectMultipleCells ? "selected" : ""}`}
+          onClick={() => handleSelectModeClicked()}
+        />
 
-        <Undo2 onClick={() => handleUndoClick()} />
+        <Undo2 className="icon-button" onClick={() => handleUndoClick()} />
 
-        <PencilLine onClick={() => handleCandidateModeClicked()} />
+        <PencilLine
+          className={`icon-button ${candidateMode ? "selected " : ""}`}
+          onClick={() => handleCandidateModeClicked()}
+        />
       </Box>
       <NumberButtonRow
         handleNumberButtonClicked={handleNumberButtonClicked}
@@ -60,7 +69,7 @@ function App() {
   }
 
   function handleNumberButtonClicked(buttonNr: number) {
-    if (candidateMode) {
+    if (!candidateMode) {
       const newCells = cells.map((cell) => {
         if (cell.selected) {
           return { ...cell, value: buttonNr };
