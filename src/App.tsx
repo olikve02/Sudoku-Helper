@@ -24,10 +24,6 @@ function App() {
     <Box className="screen-container">
       <Board cells={cells} handleCellClicked={handleCellClicked}></Board>
 
-      <CandidateButtonRow
-        handleCandidateButtonClicked={handleCandidateButtonClicked}
-      ></CandidateButtonRow>
-
       <NumberButtonRow
         handleNumberButtonClicked={handleNumberButtonClicked}
       ></NumberButtonRow>
