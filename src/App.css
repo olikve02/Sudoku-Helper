@@ -11,13 +11,18 @@
   overflow: hidden;
 }
 
-.selected {
-  box-shadow: inset 0 0 0 clamp(2px, 0.6vw, 5px) darkblue;
+.cell-selected {
+  box-shadow: inset 0 0 0 2px #51418a;
+  background-color: #1b1924;
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .screen-container {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
   gap: 12px;
   min-height: 100svh;
@@ -38,12 +43,51 @@
   gap: 2px;
 }
 
-.button {
+/* Number buttons */
+.number-button {
+  flex: 1;
   min-width: 0;
-  padding: 0;
-  border-radius: 8px;
-  aspect-ratio: 1/1;
-  
+  height: 52px;
+
+  border: 1px solid #4b5563;
+  border-radius: 9px;
+
+  background-color: #25262c;
+  color: #f3f4f6;
+
+  font-size: 1rem;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.1s ease;
+}
+
+/* Hover */
+.number-button:hover {
+  background-color: #353640;
+  border-color: #818cf8;
+}
+
+/* Press */
+.number-button:active {
+  transform: scale(0.96);
+  background-color: #3f3f50;
+}
+
+/* Keyboard focus */
+.number-button:focus-visible {
+  outline: 2px solid #a78bfa;
+  outline-offset: 2px;
+}
+
+.icon-row{
+  display: flex;
+  justify-content: space-between;
+  width: min(92vw, 520px);
 }
 
 .border-top-thick {
@@ -75,4 +119,26 @@
 
 .sudoku-value {
   font-size: clamp(1.2rem, 5vw, 2rem);
+}
+
+/* Normal icon */
+.icon-button {
+  color: #9ca3af;
+  background: transparent;
+  transition: color 0.2s ease;
+}
+
+/* Active icon */
+.icon-button.selected {
+  color: #a78bfa;
+  background: transparent;
+}
+
+/* Hover */
+.icon-button:hover {
+  color: #e5e7eb;
+}
+
+.icon-button.selected:hover {
+  color: #c4b5fd;
 }
