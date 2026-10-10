@@ -3,7 +3,7 @@ import { Button, Stack } from "@mui/material";
 function ButtonRow(props) {
   const buttons = [0, 1, 2, 3, 4, 5, 6, 7, 8];
   return (
-    <Stack direction={"row"}>
+    <Stack direction={"row"} className="button-row">
       {buttons.map((button) => (
         <Button
           key={button}

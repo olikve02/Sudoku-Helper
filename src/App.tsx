@@ -6,7 +6,6 @@ import NumberButtonRow from "./Components/Buttons/NumberButtonRow";
 import ClearSelectedCellsButton from "./Components/Buttons/ClearSelectedCellsButton";
 import ToggleSelectModeButton from "./Components/Buttons/ToggleSelectModeButton";
 import UndoButton from "./Components/Buttons/UndoButton";
-import sudokuImage from "./assets/Sudoku-page.jpg";
 
 function App() {
   const [selectMultipleCells, setSelectMultipleCells] = useState(false);
