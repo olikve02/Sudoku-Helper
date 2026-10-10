@@ -5,6 +5,7 @@ import CandidateButtonRow from "./Components/Buttons/CandidateButtonRow";
 import NumberButtonRow from "./Components/Buttons/NumberButtonRow";
 import ClearSelectedCellsButton from "./Components/Buttons/ClearSelectedCellsButton";
 import ToggleSelectModeButton from "./Components/Buttons/ToggleSelectModeButton";
+import UndoButton from "./Components/Buttons/UndoButton";
 
 function App() {
   const [selectMultipleCells, setSelectMultipleCells] = useState(false);
@@ -18,6 +19,7 @@ function App() {
     }[]
   >(addCells);
 
+  const [cellHistory, setCellHistory] = useState<(typeof cells)[]>([]);
   return (
     <Box className="screen-container">
       <Board cells={cells} handleCellClicked={handleCellClicked}></Board>
@@ -37,14 +39,14 @@ function App() {
       <ToggleSelectModeButton
         handleSelectModeClicked={handleSelectModeClicked}
       ></ToggleSelectModeButton>
+
+      <UndoButton handleUndoClick={handleUndoClick}></UndoButton>
     </Box>
   );
 
   function handleCellClicked(row: number, cell: number) {
     var newCells = cells;
-    //Check if select multiple cells mode is on
     if (!selectMultipleCells) {
-      console.log("Select multiple cells on");
       newCells = cells.map((cellState) => {
         if (cellState.row == row && cellState.cell == cell) {
           return { ...cellState, selected: true };
@@ -53,9 +55,6 @@ function App() {
         }
       });
     } else {
-      //Select multiple cells on
-      console.log("Select multiple cells off");
-
       newCells = cells.map((cellState) => {
         if (cellState.row == row && cellState.cell == cell) {
           return { ...cellState, selected: !cellState.selected };
@@ -85,7 +84,8 @@ function App() {
         return cell;
       }
     });
-    console.log(newCells);
+
+    setCellHistory([...cellHistory, cells]);
     setCells(newCells);
   }
 
@@ -97,6 +97,7 @@ function App() {
         return cell;
       }
     });
+    setCellHistory([...cellHistory, cells]);
     setCells(newCells);
   }
 
@@ -113,6 +114,16 @@ function App() {
 
   function handleSelectModeClicked() {
     setSelectMultipleCells(!selectMultipleCells);
+  }
+
+  function handleUndoClick() {
+    const previousBoards = cellHistory.slice(0, -1);
+    console.log(previousBoards);
+    setCellHistory(previousBoards);
+    const snapshot = cellHistory.at(-1);
+    if (snapshot != undefined) {
+      setCells(snapshot);
+    }
   }
 }
 
