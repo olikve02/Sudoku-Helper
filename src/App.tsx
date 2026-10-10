@@ -1,11 +1,7 @@
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import Board from "./Components/Board";
 import { useState } from "react";
-import CandidateButtonRow from "./Components/Buttons/CandidateButtonRow";
 import NumberButtonRow from "./Components/Buttons/NumberButtonRow";
-import ClearSelectedCellsButton from "./Components/Buttons/ClearSelectedCellsButton";
-import ToggleSelectModeButton from "./Components/Buttons/ToggleSelectModeButton";
-import UndoButton from "./Components/Buttons/UndoButton";
 
 function App() {
   const [selectMultipleCells, setSelectMultipleCells] = useState(false);
@@ -23,20 +19,20 @@ function App() {
   return (
     <Box className="screen-container">
       <Board cells={cells} handleCellClicked={handleCellClicked}></Board>
+      <Box>
+        <Button onClick={() => handleClearSelectedCellsClicked()}>
+          Clear Selected Cells{" "}
+        </Button>
 
+        <Button onClick={() => handleSelectModeClicked()}>
+          Select Multiple Cells
+        </Button>
+
+        <Button onClick={() => handleUndoClick()}>Undo</Button>
+      </Box>
       <NumberButtonRow
         handleNumberButtonClicked={handleNumberButtonClicked}
       ></NumberButtonRow>
-
-      <ClearSelectedCellsButton
-        handleClearSelectedCellsClicked={handleClearSelectedCellsClicked}
-      ></ClearSelectedCellsButton>
-
-      <ToggleSelectModeButton
-        handleSelectModeClicked={handleSelectModeClicked}
-      ></ToggleSelectModeButton>
-
-      <UndoButton handleUndoClick={handleUndoClick}></UndoButton>
     </Box>
   );
 
