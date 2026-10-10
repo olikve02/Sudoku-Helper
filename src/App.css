@@ -47,11 +47,9 @@
 }
 
 .icon-row{
+  display: flex;
+  justify-content: space-between;
   width: min(92vw, 520px);
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  background-color: red;
-  outline-color: red;
 }
 
 .border-top-thick {
