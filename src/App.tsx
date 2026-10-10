@@ -2,9 +2,11 @@ import { Box, Button } from "@mui/material";
 import Board from "./Components/Board";
 import { useState } from "react";
 import NumberButtonRow from "./Components/Buttons/NumberButtonRow";
+import { Eraser, Grid2x2Check, PencilLine, Undo2 } from "lucide-react";
 
 function App() {
   const [selectMultipleCells, setSelectMultipleCells] = useState(false);
+  const [candidateMode, setCandidateMode] = useState(false);
   const [cells, setCells] = useState<
     {
       row: number;
@@ -19,16 +21,14 @@ function App() {
   return (
     <Box className="screen-container">
       <Board cells={cells} handleCellClicked={handleCellClicked}></Board>
-      <Box>
-        <Button onClick={() => handleClearSelectedCellsClicked()}>
-          Clear Selected Cells{" "}
-        </Button>
+      <Box className="icon-row">
+        <Eraser onClick={() => handleClearSelectedCellsClicked()} />
 
-        <Button onClick={() => handleSelectModeClicked()}>
-          Select Multiple Cells
-        </Button>
+        <Grid2x2Check onClick={() => handleSelectModeClicked()} />
 
-        <Button onClick={() => handleUndoClick()}>Undo</Button>
+        <Undo2 onClick={() => handleUndoClick()} />
+
+        <PencilLine onClick={() => handleCandidateModeClicked()} />
       </Box>
       <NumberButtonRow
         handleNumberButtonClicked={handleNumberButtonClicked}
@@ -59,38 +59,38 @@ function App() {
     setCells(newCells);
   }
 
-  function handleCandidateButtonClicked(buttonNr: number) {
-    const newCells = cells.map((cell) => {
-      if (cell.selected) {
-        if (cell.candidates.includes(buttonNr)) {
-          return {
-            ...cell,
-            candidates: cell.candidates.filter(
-              (candidate) => candidate != buttonNr,
-            ),
-          };
-        } else {
-          return { ...cell, candidates: [...cell.candidates, buttonNr] };
-        }
-      } else {
-        return cell;
-      }
-    });
-
-    setCellHistory([...cellHistory, cells]);
-    setCells(newCells);
-  }
-
   function handleNumberButtonClicked(buttonNr: number) {
-    const newCells = cells.map((cell) => {
-      if (cell.selected) {
-        return { ...cell, value: buttonNr };
-      } else {
-        return cell;
-      }
-    });
-    setCellHistory([...cellHistory, cells]);
-    setCells(newCells);
+    if (candidateMode) {
+      const newCells = cells.map((cell) => {
+        if (cell.selected) {
+          return { ...cell, value: buttonNr };
+        } else {
+          return cell;
+        }
+      });
+      setCellHistory([...cellHistory, cells]);
+      setCells(newCells);
+    } else {
+      const newCells = cells.map((cell) => {
+        if (cell.selected) {
+          if (cell.candidates.includes(buttonNr)) {
+            return {
+              ...cell,
+              candidates: cell.candidates.filter(
+                (candidate) => candidate != buttonNr,
+              ),
+            };
+          } else {
+            return { ...cell, candidates: [...cell.candidates, buttonNr] };
+          }
+        } else {
+          return cell;
+        }
+      });
+
+      setCellHistory([...cellHistory, cells]);
+      setCells(newCells);
+    }
   }
 
   function handleClearSelectedCellsClicked() {
@@ -116,6 +116,10 @@ function App() {
     if (snapshot != undefined) {
       setCells(snapshot);
     }
+  }
+
+  function handleCandidateModeClicked() {
+    setCandidateMode(!candidateMode);
   }
 }
 
