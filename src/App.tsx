@@ -2,11 +2,13 @@ import { Box, Button } from "@mui/material";
 import Board from "./Components/Board";
 import { useState } from "react";
 import NumberButtonRow from "./Components/Buttons/NumberButtonRow";
-import { Eraser, Grid2x2Check, PencilLine, Undo2 } from "lucide-react";
+import { Camera, Eraser, Grid2x2Check, PencilLine, Undo2 } from "lucide-react";
+import CameraScanner from "./Components/CameraScanner";
 
 function App() {
   const [selectMultipleCells, setSelectMultipleCells] = useState(false);
   const [candidateMode, setCandidateMode] = useState(false);
+  const [goToPictureScreen, setgoToPictureScreen] = useState(false);
   const [cells, setCells] = useState<
     {
       row: number;
@@ -20,28 +22,43 @@ function App() {
   const [cellHistory, setCellHistory] = useState<(typeof cells)[]>([]);
   return (
     <Box className="screen-container">
-      <Board cells={cells} handleCellClicked={handleCellClicked}></Board>
-      <Box className="icon-row">
-        <Eraser
-          className="icon-button"
-          onClick={() => handleClearSelectedCellsClicked()}
-        />
+      {goToPictureScreen ? (
+        <div>
+          <Board cells={cells} handleCellClicked={handleCellClicked}></Board>
+          <Box className="icon-row">
+            <Eraser
+              className="icon-button"
+              onClick={() => handleClearSelectedCellsClicked()}
+            />
 
-        <Grid2x2Check
-          className={`icon-button ${selectMultipleCells ? "selected" : ""}`}
-          onClick={() => handleSelectModeClicked()}
-        />
+            <Grid2x2Check
+              className={`icon-button ${selectMultipleCells ? "selected" : ""}`}
+              onClick={() => handleSelectModeClicked()}
+            />
 
-        <Undo2 className="icon-button" onClick={() => handleUndoClick()} />
+            <Undo2 className="icon-button" onClick={() => handleUndoClick()} />
 
-        <PencilLine
-          className={`icon-button ${candidateMode ? "selected " : ""}`}
-          onClick={() => handleCandidateModeClicked()}
-        />
-      </Box>
-      <NumberButtonRow
-        handleNumberButtonClicked={handleNumberButtonClicked}
-      ></NumberButtonRow>
+            <PencilLine
+              className={`icon-button ${candidateMode ? "selected " : ""}`}
+              onClick={() => handleCandidateModeClicked()}
+            />
+            <Camera
+              className={`icon-button ${!goToPictureScreen ? "selected " : ""}`}
+              onClick={() => {
+                handlegoToPictureScreenClicked();
+              }}
+            />
+          </Box>
+          <NumberButtonRow
+            handleNumberButtonClicked={handleNumberButtonClicked}
+          ></NumberButtonRow>
+        </div>
+      ) : (
+        <CameraScanner
+          handlegoToPictureScreenClicked={handlegoToPictureScreenClicked}
+          goToPictureScreen={goToPictureScreen}
+        ></CameraScanner>
+      )}
     </Box>
   );
 
@@ -129,6 +146,10 @@ function App() {
 
   function handleCandidateModeClicked() {
     setCandidateMode(!candidateMode);
+  }
+
+  function handlegoToPictureScreenClicked() {
+    setgoToPictureScreen(!goToPictureScreen);
   }
 }
 
