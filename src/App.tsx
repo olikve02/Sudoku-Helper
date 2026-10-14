@@ -4,11 +4,13 @@ import { useState } from "react";
 import NumberButtonRow from "./Components/Buttons/NumberButtonRow";
 import { Camera, Eraser, Grid2x2Check, PencilLine, Undo2 } from "lucide-react";
 import CameraScanner from "./Components/CameraScanner";
-
+import "./App.css";
+import takePicture from "./Components/ImageProcessing";
 function App() {
   const [selectMultipleCells, setSelectMultipleCells] = useState(false);
   const [candidateMode, setCandidateMode] = useState(false);
   const [goToPictureScreen, setgoToPictureScreen] = useState(false);
+
   const [cells, setCells] = useState<
     {
       row: number;
@@ -56,6 +58,7 @@ function App() {
       ) : (
         <CameraScanner
           handlegoToPictureScreenClicked={handlegoToPictureScreenClicked}
+          handleTakePictureClicked={handleTakePictureClicked}
           goToPictureScreen={goToPictureScreen}
         ></CameraScanner>
       )}
@@ -150,6 +153,25 @@ function App() {
 
   function handlegoToPictureScreenClicked() {
     setgoToPictureScreen(!goToPictureScreen);
+  }
+
+  async function handleTakePictureClicked(
+    video: HTMLVideoElement,
+    guideBox: HTMLDivElement,
+  ) {
+    const preds = await takePicture(video, guideBox);
+
+    const newCells = cells.map((cell, index) => {
+      const prediction = preds[index];
+
+      if (prediction == 0 || prediction == undefined) {
+        return cell;
+      }
+
+      return { ...cell, value: prediction };
+    });
+
+    setCells(newCells);
   }
 }
 
