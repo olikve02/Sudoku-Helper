@@ -5,7 +5,7 @@ import NumberButtonRow from "./Components/Buttons/NumberButtonRow";
 import { Camera, Eraser, Grid2x2Check, PencilLine, Undo2 } from "lucide-react";
 import CameraScanner from "./Components/CameraScanner";
 import "./App.css";
-import takePicture from "./Components/ImageProcessing";
+import takePicture from "./Components/ImageProcessing/ImageProcessing";
 function App() {
   const [selectMultipleCells, setSelectMultipleCells] = useState(false);
   const [candidateMode, setCandidateMode] = useState(false);
