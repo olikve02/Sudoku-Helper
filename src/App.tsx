@@ -165,7 +165,7 @@ function App() {
       const prediction = preds[index];
 
       if (prediction == 0 || prediction == undefined) {
-        return cell;
+        return { ...cell, value: null };
       }
 
       return { ...cell, value: prediction };
