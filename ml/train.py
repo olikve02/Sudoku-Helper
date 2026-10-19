@@ -7,6 +7,7 @@ import os as os
 image = []
 labels = []
 sheet = []
+filePath = []
 
 for label in range(1,10):
     content = os.listdir(f"./ml/data/{label}")   
@@ -16,11 +17,13 @@ for label in range(1,10):
         labels.append(label)
         loadedImg = keras.utils.load_img(f"./ml/data/{label}/{imagePath}", color_mode="grayscale")
         image.append(keras.utils.img_to_array(loadedImg))
+        filePath.append(imagePath)
 
 
 npImages = np.array(image)
 labelsNp = np.array(labels)
 sheetNp = np.array(sheet)
+filePathNp = np.array(filePath)
 
 normalizedImages = npImages/255
 labelsNp = labelsNp -1
@@ -48,6 +51,8 @@ testLabels = labelsNp[testMask]
 validationLabels = labelsNp[validationMask]
 trainingLabels = labelsNp[trainingMask]
 
+validationPaths = filePathNp[validationMask]
+
 print(f"Test images: {testImages.shape} validation Images: {validationImages.shape} training images: {trainingImages.shape}")
 
 print(f"Test Labels: {testLabels.shape} validation Labels: {validationLabels.shape} training Labels: {trainingLabels.shape}")
@@ -55,6 +60,9 @@ print(f"Test Labels: {testLabels.shape} validation Labels: {validationLabels.sha
 
 model = keras.Sequential([
     keras.layers.Input(shape= (28,28,1)),
+
+
+    keras.layers.RandomRotation(0.02),
 
     keras.layers.Conv2D(32, (3,3), activation = "relu"),
     keras.layers.MaxPooling2D((2, 2)),
@@ -64,6 +72,7 @@ model = keras.Sequential([
 
     keras.layers.Flatten(),
     keras.layers.Dense(64, activation = "relu"),
+    keras.layers.Dropout(0.3),
     keras.layers.Dense(9, activation = "softmax")
 
 ])
@@ -77,12 +86,18 @@ model.compile(
     metrics= ["accuracy"]
 )
 
+earlyStopping = keras.callbacks.EarlyStopping(monitor= "val_loss", patience= 5, restore_best_weights= True)
+
 history = model.fit(
     trainingImages,
     trainingLabels,
-    epochs= 10,
-    validation_data= (validationImages, validationLabels)
+    epochs= 100,
+    validation_data= (validationImages, validationLabels),
+    callbacks= [earlyStopping]
 )
+
+print(model.evaluate(testImages, testLabels))
+
 
 #accuracyHistory = history.history["accuracy"]
 #validationAccuracyHistory = history.history["val_accuracy"]
@@ -91,3 +106,22 @@ history = model.fit(
 #plt.plot(validationAccuracyHistory)
 #plt.legend("training", "validation")
 #plt.show()
+
+#probabilities = model.predict(validationImages)
+#predictions = np.argmax(probabilities, axis= 1)
+
+#faliureMask = predictions != validationLabels
+
+#wrongPredictions = predictions[faliureMask]
+#actualLabel = validationLabels[faliureMask]
+#wrongPredictedImg = validationImages[faliureMask]
+#filePaths = validationPaths[faliureMask]
+
+
+#for i in range(0, len(wrongPredictions)):
+  #  plt.imshow(wrongPredictedImg[i], cmap= "gray")
+   # plt.title(f"Prediction: {wrongPredictions[i]+1} Actual: {actualLabel[i]+1} \n filePath: {filePaths[i] }")    
+    #plt.show()
+
+
+
