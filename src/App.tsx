@@ -1,5 +1,4 @@
 import { Box } from "@mui/material";
-import { useState } from "react";
 import { Camera, Eraser, Grid2x2Check, PencilLine, Undo2 } from "lucide-react";
 import Board from "./components/Board";
 import NumberButtonRow from "./components/NumberButtonRow";
@@ -14,10 +13,7 @@ const showLabelingTool = new URLSearchParams(window.location.search).has(
   "label",
 );
 
-type Screen = "board" | "camera";
-
 function App() {
-  const [screen, setScreen] = useState<Screen>("camera");
   const board = useSudokuBoard();
 
   if (showLabelingTool) {
@@ -26,7 +22,7 @@ function App() {
 
   return (
     <Box className="screen-container">
-      {screen === "board" ? (
+      {board.screen == "board" ? (
         <div>
           <Board cells={board.cells} onCellClick={board.selectCell} />
           <Box className="icon-row">
@@ -40,20 +36,26 @@ function App() {
               className={`icon-button ${board.candidateMode ? "selected" : ""}`}
               onClick={board.toggleCandidateMode}
             />
-            <Camera className="icon-button" onClick={() => setScreen("camera")} />
+            <Camera
+              className="icon-button"
+              onClick={() => board.swapScreen("camera")}
+            />
           </Box>
           <NumberButtonRow onNumberClick={board.enterNumber} />
         </div>
       ) : (
         <CameraScanner
           onCapture={handleCapture}
-          onBack={() => setScreen("board")}
+          onBack={() => board.swapScreen("board")}
         />
       )}
     </Box>
   );
 
-  async function handleCapture(video: HTMLVideoElement, guideBox: HTMLDivElement) {
+  async function handleCapture(
+    video: HTMLVideoElement,
+    guideBox: HTMLDivElement,
+  ) {
     const digits = await scanBoard(video, guideBox);
     board.setScannedValues(digits);
   }

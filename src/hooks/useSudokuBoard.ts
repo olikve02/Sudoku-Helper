@@ -1,15 +1,17 @@
 import { useState } from "react";
-import type { CellState } from "../types";
+import type { CellState, Screen } from "../types";
 
 /**
  * All tilstand og logikk for sudokubrettet: hvilke celler som er valgt,
  * tall og kandidater, og angre-historikk.
  */
+
 export default function useSudokuBoard() {
   const [cells, setCells] = useState<CellState[]>(createEmptyBoard);
   const [history, setHistory] = useState<CellState[][]>([]);
   const [selectMultiple, setSelectMultiple] = useState(false);
   const [candidateMode, setCandidateMode] = useState(false);
+  const [screen, setScreen] = useState<Screen>("camera");
 
   // Velger en celle. I flervalgsmodus slås cella av og på uten å påvirke de andre.
   function selectCell(row: number, col: number) {
@@ -65,9 +67,17 @@ export default function useSudokuBoard() {
         value: digits[index] ? digits[index] : null,
       })),
     );
+    setScreen("board");
+  }
+
+  function swapScreen(screen: Screen) {
+    console.log(screen);
+    setScreen(screen);
   }
 
   return {
+    screen,
+    swapScreen,
     cells,
     selectMultiple,
     candidateMode,
