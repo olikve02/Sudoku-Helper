@@ -43,11 +43,6 @@ export default function useSudokuBoard() {
     setCells(newCells);
   }
 
-  // Fjerner markeringen fra alle celler
-  function clearSelection() {
-    setCells(cells.map((cell) => ({ ...cell, selected: false })));
-  }
-
   // Går tilbake til brettet slik det var før forrige endring
   function undo() {
     const previous = history.at(-1);
@@ -75,7 +70,6 @@ export default function useSudokuBoard() {
         return cell;
       }
     });
-    clearSelection();
     setHistory([...history, cells]);
     setCells(newCells);
   }
@@ -86,7 +80,6 @@ export default function useSudokuBoard() {
     candidateMode,
     selectCell,
     enterNumber,
-    clearSelection,
     undo,
     setScannedValues,
     erase,
