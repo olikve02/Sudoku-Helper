@@ -61,7 +61,7 @@ export default function useSudokuBoard() {
       })),
     );
   }
-
+  //Fjerner alt i cellene som er markert
   function erase() {
     const newCells = cells.map((cell) => {
       if (cell.selected) {
