@@ -67,6 +67,19 @@ export default function useSudokuBoard() {
     );
   }
 
+  function erase() {
+    const newCells = cells.map((cell) => {
+      if (cell.selected) {
+        return { ...cell, value: null, candidates: [] };
+      } else {
+        return cell;
+      }
+    });
+    clearSelection();
+    setHistory([...history, cells]);
+    setCells(newCells);
+  }
+
   return {
     cells,
     selectMultiple,
@@ -76,6 +89,7 @@ export default function useSudokuBoard() {
     clearSelection,
     undo,
     setScannedValues,
+    erase,
     toggleSelectMultiple: () => setSelectMultiple(!selectMultiple),
     toggleCandidateMode: () => setCandidateMode(!candidateMode),
   };
