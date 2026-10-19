@@ -1,50 +1,50 @@
 import * as tf from "@tensorflow/tfjs";
+import type { ProcessedCell } from "./ProcessCroppedCells";
 
+// Modellen lastes bare første gang, og gjenbrukes etterpå
 let model: tf.LayersModel | null = null;
 
-async function loadModel(): Promise<tf.LayersModel> {
-  if (!model) {
-    model = await tf.loadLayersModel("/models/digit-recognition/model.json");
-  }
-
-  return model;
-}
-
-export default async function recognizeHandwriting(
-  images: HTMLCanvasElement[],
+/**
+ * Gjenkjenner sifrene i 81 behandlede celler.
+ * Returnerer 81 tall: 0 for tomme celler, ellers sifferet 1–9.
+ */
+export default async function recognizeNumbers(
+  cells: ProcessedCell[],
 ): Promise<number[]> {
-  const loadedModel = await loadModel();
-  const predictions: number[] = [];
-
-  for (const image of images) {
-    const input = tf.tidy(() => {
-      const pixels = tf.browser.fromPixels(image, 1);
-      const resized = tf.image.resizeBilinear(pixels, [28, 28]);
-      const inverted = tf.scalar(255).sub(resized);
-
-      return inverted.div(255).expandDims(0);
-    });
-
-    let prediction: tf.Tensor | undefined;
-
-    try {
-      prediction = loadedModel.predict(input) as tf.Tensor;
-      const probabilities = await prediction.data();
-
-      let bestIndex = 0;
-
-      for (let i = 1; i < probabilities.length; i++) {
-        if (probabilities[i] > probabilities[bestIndex]) {
-          bestIndex = i;
-        }
-      }
-
-      predictions.push(bestIndex);
-    } finally {
-      prediction?.dispose();
-      input.dispose();
-    }
+  if (!model) {
+    model = await tf.loadLayersModel("/models/digits/model.json");
   }
 
-  return predictions;
+  // Tomme celler har allerede riktig svar (0)
+  const result: number[] = new Array(cells.length).fill(0);
+
+  // Plukk ut cellene med siffer, og husk hvilken plass (0–80) de hadde
+  const canvases: HTMLCanvasElement[] = [];
+  const positions: number[] = [];
+  cells.forEach((cell, index) => {
+    if (!cell.isEmpty) {
+      canvases.push(cell.canvas);
+      positions.push(index);
+    }
+  });
+  if (canvases.length === 0) return result;
+
+  // Samme behandling som i Python: gråtoner, 0–1, alle bildene i én bunke
+  const classes = tf.tidy(() => {
+    const images = tf.stack(
+      canvases.map((canvas) => tf.browser.fromPixels(canvas, 1).div(255)),
+    );
+    const probabilities = model!.predict(images) as tf.Tensor;
+    return probabilities.argMax(1);
+  });
+
+  const predicted = await classes.data();
+  classes.dispose();
+
+  // Klasse 0–8 er sifrene 1–9
+  positions.forEach((position, i) => {
+    result[position] = predicted[i] + 1;
+  });
+
+  return result;
 }

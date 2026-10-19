@@ -67,15 +67,16 @@ function App() {
         </div>
       ) : (
         <div>
-          {/*
           <CameraScanner
             handlegoToPictureScreenClicked={handlegoToPictureScreenClicked}
             handleTakePictureClicked={handleTakePictureClicked}
             goToPictureScreen={goToPictureScreen}
           ></CameraScanner>
-          */}
+
           {<img src={loadedImg}></img>}
+          {/*
           <ChooseCorrectNumber></ChooseCorrectNumber>
+           */}
           {/* 
           <div>
             <span>{scaleImages.length}</span>
@@ -199,8 +200,6 @@ function App() {
     });
 
     setCells(newCells);
-
-    setScaledImages(await testImages(video, guideBox));
   }
 }
 
