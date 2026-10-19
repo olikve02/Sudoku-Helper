@@ -27,3 +27,6 @@ ml/.venv
 *.sln
 *.sw?
 
+
+# Programmer som ikke hører hjemme i repoet
+cloudflared.exe

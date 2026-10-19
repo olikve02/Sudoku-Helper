@@ -1,25 +1,22 @@
-import { Box, Button } from "@mui/material";
+import { Box } from "@mui/material";
 import Board from "./Components/Board";
 import { useState } from "react";
 import NumberButtonRow from "./Components/Buttons/NumberButtonRow";
 import { Camera, Eraser, Grid2x2Check, PencilLine, Undo2 } from "lucide-react";
 import CameraScanner from "./Components/CameraScanner";
 import "./App.css";
-import takePicture, {
-  testImages,
-} from "./Components/ImageProcessing/ImageProcessing";
-import GetImageFromFile from "./Components/ImageProcessing/GetImageFromFiles";
-import { processImageWithOpenCV } from "./Components/ImageProcessing/DetectSudokuBoard";
-import cropCells from "./Components/ImageProcessing/CropCells";
+import takePicture from "./Components/ImageProcessing/ImageProcessing";
 import ChooseCorrectNumber from "./Components/ImageProcessing/ChooseCorrectNumber";
+
+// Merkeverktøyet for treningsdata åpnes med ?label i adressen
+const showLabelingTool = new URLSearchParams(window.location.search).has(
+  "label",
+);
 
 function App() {
   const [selectMultipleCells, setSelectMultipleCells] = useState(false);
   const [candidateMode, setCandidateMode] = useState(false);
   const [goToPictureScreen, setgoToPictureScreen] = useState(false);
-  const [scaleImages, setScaledImages] = useState<string[]>([]);
-  const [loadedImg, setLoadedImg] = useState<string>();
-  const [croppedCells, setCroppedCells] = useState<HTMLCanvasElement[]>();
 
   const [cells, setCells] = useState<
     {
@@ -32,6 +29,11 @@ function App() {
   >(addCells);
 
   const [cellHistory, setCellHistory] = useState<(typeof cells)[]>([]);
+
+  if (showLabelingTool) {
+    return <ChooseCorrectNumber />;
+  }
+
   return (
     <Box className="screen-container">
       {goToPictureScreen ? (
@@ -66,28 +68,11 @@ function App() {
           ></NumberButtonRow>
         </div>
       ) : (
-        <div>
-          {/*
-          <CameraScanner
-            handlegoToPictureScreenClicked={handlegoToPictureScreenClicked}
-            handleTakePictureClicked={handleTakePictureClicked}
-            goToPictureScreen={goToPictureScreen}
-          ></CameraScanner>
-          */}
-          {<img src={loadedImg}></img>}
-          <ChooseCorrectNumber></ChooseCorrectNumber>
-          {/* 
-          <div>
-            <span>{scaleImages.length}</span>
-            {scaleImages.map((image) => (
-              <img src={image}></img>
-            ))}
-          </div>
-          */}
-          {croppedCells?.map((image) => (
-            <img src={image.toDataURL("image/png")}></img>
-          ))}
-        </div>
+        <CameraScanner
+          handlegoToPictureScreenClicked={handlegoToPictureScreenClicked}
+          handleTakePictureClicked={handleTakePictureClicked}
+          goToPictureScreen={goToPictureScreen}
+        ></CameraScanner>
       )}
     </Box>
   );
@@ -199,8 +184,6 @@ function App() {
     });
 
     setCells(newCells);
-
-    setScaledImages(await testImages(video, guideBox));
   }
 }
 

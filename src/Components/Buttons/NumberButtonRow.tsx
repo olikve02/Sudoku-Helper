@@ -1,6 +1,10 @@
-import { Stack, Box } from "@mui/material";
+import { Box } from "@mui/material";
 
-function ButtonRow(props) {
+type ButtonRowProps = {
+  handleNumberButtonClicked: (number: number) => void;
+};
+
+function ButtonRow(props: ButtonRowProps) {
   const buttons = [0, 1, 2, 3, 4, 5, 6, 7, 8];
   return (
     <Box className="button-row">
