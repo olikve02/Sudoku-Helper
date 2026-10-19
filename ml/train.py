@@ -55,9 +55,17 @@ print(f"Test Labels: {testLabels.shape} validation Labels: {validationLabels.sha
 
 model = keras.Sequential([
     keras.layers.Input(shape= (28,28,1)),
+
+    keras.layers.Conv2D(32, (3,3), activation = "relu"),
+    keras.layers.MaxPooling2D((2, 2)),
+
+    keras.layers.Conv2D(64, (3,3), activation = "relu"),
+    keras.layers.MaxPooling2D((2, 2)),
+
     keras.layers.Flatten(),
-    keras.layers.Dense(128, "relu"),
-    keras.layers.Dense(9, "softmax")
+    keras.layers.Dense(64, activation = "relu"),
+    keras.layers.Dense(9, activation = "softmax")
+
 ])
 
 model.summary()
@@ -76,9 +84,10 @@ history = model.fit(
     validation_data= (validationImages, validationLabels)
 )
 
-accuracyHistory = history.history["accuracy"]
-validationAccuracyHistory = history.history["val_accuracy"]
-plt.plot(accuracyHistory)
-plt.plot(validationAccuracyHistory)
-plt.legend("training", "validation")
-plt.show()
+#accuracyHistory = history.history["accuracy"]
+#validationAccuracyHistory = history.history["val_accuracy"]
+#plt.plot(accuracyHistory)
+
+#plt.plot(validationAccuracyHistory)
+#plt.legend("training", "validation")
+#plt.show()
