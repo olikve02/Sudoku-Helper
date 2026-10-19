@@ -11,8 +11,6 @@
     justify-content: center;
     width: 100%;
     height: 40px;
-    border: solid;
-    border-color: red;
 }
 
 .camera-view {
@@ -46,22 +44,6 @@
     width: 45%;
     max-width: 400px;
   }
-}
-
-.predictions {
-  display: grid;
-  grid-template-columns: repeat(9, minmax(0, 1fr));
-  gap: 4px;
-  width: 100%;
-  max-width: 600px;
-  margin: 20px auto;
-}
-
-.prediction {
-  position: relative;
-  aspect-ratio: 1 / 1;
-  border: 1px solid #888;
-  overflow: hidden;
 }
 
 

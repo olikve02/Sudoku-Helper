@@ -1,24 +1,29 @@
-import Box from "@mui/material/Box";
-import { Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { useRef, useState } from "react";
 import JSZip from "jszip";
-import GetImageFromFile from "./GetImageFromFiles";
-import { processImageWithOpenCV } from "./DetectSudokuBoard";
-import cropCells from "./CropCells";
-import processCroppedCells, { type ProcessedCell } from "./ProcessCroppedCells";
+import ImageFileInput from "./ImageFileInput";
+import detectBoard from "../../scanner/detectBoard";
+import cropCells from "../../scanner/cropCells";
+import processCells, { type ProcessedCell } from "../../scanner/processCells";
 
 const dataOf = (canvas: HTMLCanvasElement) =>
   canvas.toDataURL("image/png").split(",")[1];
 
-function ChooseCorrectNumber() {
+/**
+ * Utviklerverktøy for å lage treningsdata. Last opp et bilde av et brett,
+ * skriv inn riktig siffer for hver celle, og last ned cellene som en zip
+ * med én mappe per siffer (pluss de ubehandlede utsnittene i raw/).
+ * Åpnes med ?label i adressen.
+ */
+function LabelingTool() {
   const [cells, setCells] = useState<ProcessedCell[]>([]);
+  const [rawCells, setRawCells] = useState<HTMLCanvasElement[]>([]);
+  const [sheetId, setSheetId] = useState(0);
   const [index, setIndex] = useState(0);
   const [userInput, setUserInput] = useState("");
   const [finished, setFinished] = useState(false);
 
-  const rawCells = useRef<HTMLCanvasElement[]>([]);
   const savedPaths = useRef<string[][]>([]);
-  const sheetId = useRef(0);
   const zip = useRef(new JSZip());
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -28,7 +33,7 @@ function ChooseCorrectNumber() {
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1, width: 220 }}>
       <span>
         {cells.length
-          ? `Ark ${sheetId.current} – celle ${index + 1} / ${cells.length}`
+          ? `Ark ${sheetId} – celle ${index + 1} / ${cells.length}`
           : "Velg et bilde"}
       </span>
 
@@ -44,7 +49,7 @@ function ChooseCorrectNumber() {
             title="Prosessert"
           />
           <img
-            src={rawCells.current[index]?.toDataURL("image/png")}
+            src={rawCells[index]?.toDataURL("image/png")}
             style={{ width: 100 }}
             title="Rå"
           />
@@ -80,7 +85,7 @@ function ChooseCorrectNumber() {
         <Button onClick={downloadZip}>Last ned zip</Button>
       </Box>
 
-      <GetImageFromFile handleImageSelected={handleImageSelected} />
+      <ImageFileInput onImageSelected={handleImageSelected} />
     </Box>
   );
 
@@ -92,19 +97,18 @@ function ChooseCorrectNumber() {
     if (!ctx) return;
     ctx.drawImage(image, 0, 0);
 
-    const board = await processImageWithOpenCV(canvas);
-    if (!board) return alert("Fant ikke sudokubrettet i bildet.");
-    if (board.width === 0) {
+    const board = await detectBoard(canvas);
+    if (!board || board.width === 0) {
       alert("Fant ikke sudokubrettet i bildet.");
       return;
     }
 
     const raw = await cropCells(board);
-    const processed = await processCroppedCells(raw);
+    const processed = await processCells(raw);
 
-    sheetId.current += 1;
-    rawCells.current = raw;
     savedPaths.current = [];
+    setSheetId(sheetId + 1);
+    setRawCells(raw);
     setCells(processed);
     setFinished(false);
     show(0, processed);
@@ -123,14 +127,12 @@ function ChooseCorrectNumber() {
     // Hvis cella allerede er merket (etter "Tilbake"), fjern den gamle
     savedPaths.current[index]?.forEach((p) => zip.current.remove(p));
 
-    const name = `sheet${sheetId.current}-cell-${String(index + 1).padStart(2, "0")}.png`;
+    const name = `sheet${sheetId}-cell-${String(index + 1).padStart(2, "0")}.png`;
     const processedPath = `${value}/${name}`;
     const rawPath = `raw/${value}/${name}`;
 
     zip.current.file(processedPath, dataOf(current.canvas), { base64: true });
-    zip.current.file(rawPath, dataOf(rawCells.current[index]), {
-      base64: true,
-    });
+    zip.current.file(rawPath, dataOf(rawCells[index]), { base64: true });
     savedPaths.current[index] = [processedPath, rawPath];
 
     if (index + 1 >= cells.length) {
@@ -158,4 +160,4 @@ function ChooseCorrectNumber() {
   }
 }
 
-export default ChooseCorrectNumber;
+export default LabelingTool;

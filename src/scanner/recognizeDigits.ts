@@ -1,5 +1,5 @@
 import * as tf from "@tensorflow/tfjs";
-import type { ProcessedCell } from "./ProcessCroppedCells";
+import type { ProcessedCell } from "./processCells";
 
 // Modellen lastes bare første gang, og gjenbrukes etterpå
 let model: tf.LayersModel | null = null;
@@ -8,7 +8,7 @@ let model: tf.LayersModel | null = null;
  * Gjenkjenner sifrene i 81 behandlede celler.
  * Returnerer 81 tall: 0 for tomme celler, ellers sifferet 1–9.
  */
-export default async function recognizeNumbers(
+export default async function recognizeDigits(
   cells: ProcessedCell[],
 ): Promise<number[]> {
   if (!model) {

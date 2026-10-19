@@ -10,7 +10,7 @@ type Point = { x: number; y: number };
  * Finner sudokubrettet i bildet og returnerer et rettet, kvadratisk canvas.
  * Returnerer null hvis ingen brukbar firkant ble funnet.
  */
-export async function processImageWithOpenCV(
+export default async function detectBoard(
   canvas: HTMLCanvasElement,
 ): Promise<HTMLCanvasElement | null> {
   const cv = await cvReadyPromise;

@@ -42,13 +42,13 @@ cloudflared tunnel --url http://localhost:5173
 
 ## Slik gjenkjennes tallene
 
-Fra kamerabilde til 81 tall går bildet gjennom disse stegene i `src/Components/ImageProcessing/`:
+Fra kamerabilde til 81 tall går bildet gjennom disse stegene i `src/scanner/`:
 
-1. **`ImageProcessing.ts`**: klipper ut området innenfor guideboksen og styrer resten av stegene
-2. **`DetectSudokuBoard.ts`**: finner brettet og retter opp perspektivet til et kvadrat
-3. **`CropCells.ts`**: finner rutenettlinjene, fjerner dem og deler brettet i 81 celler
-4. **`ProcessCroppedCells.ts`**: gjør hver celle om til et 28×28 bilde med hvitt siffer på svart bunn, og avgjør om cella er tom
-5. **`RecognizeNumbert.ts`**: lar modellen gjenkjenne sifrene i cellene som ikke er tomme
+1. **`scanBoard.ts`**: klipper ut området innenfor guideboksen og styrer resten av stegene
+2. **`detectBoard.ts`**: finner brettet og retter opp perspektivet til et kvadrat
+3. **`cropCells.ts`**: finner rutenettlinjene, fjerner dem og deler brettet i 81 celler
+4. **`processCells.ts`**: gjør hver celle om til et 28×28 bilde med hvitt siffer på svart bunn, og avgjør om cella er tom
+5. **`recognizeDigits.ts`**: lar modellen gjenkjenne sifrene i cellene som ikke er tomme
 
 Modellen ligger i `public/models/digits/` (`model.json` og `weights.bin`).
 
@@ -75,7 +75,7 @@ ml\.venv\Scripts\Activate.ps1
 ```
 
 ```bash
-pip install tensorflow numpy matplotlib
+pip install -r ml/requirements.txt
 ```
 
 ### 3. Tren
@@ -85,6 +85,8 @@ python ml/train.py
 ```
 
 Scriptet laster bildene, deler dem i trening, validering og test **per ark** (så bilder fra samme brett ikke havner i flere deler), trener et lite CNN med Early Stopping, skriver ut resultatet på testsettet og lagrer modellen til `ml/digit-model.keras`.
+
+Legg til `--plot` for å se læringskurven, eller `--show-mistakes` for å se valideringsbildene modellen tar feil på. Det siste er nyttig for å finne feilmerkede bilder. Hvilke ark som brukes til validering og test står øverst i `train.py`.
 
 ### 4. Eksporter til appen
 
@@ -98,13 +100,16 @@ Eksportscriptet skriver modellen i TensorFlow.js-format uten `tensorflowjs`-pakk
 
 ```
 src/
-  App.tsx                    Skjermvalg og spill-logikk
-  Components/                Brett, celler, knapper og kamera
-  Components/ImageProcessing/
-                             Bildebehandling, gjenkjenning og merkeverktøyet
+  App.tsx                    Velger hvilken skjerm som vises
+  types.ts                   Felles typer (CellState)
+  components/                Brett, celler, knapper og kamera
+  hooks/useSudokuBoard.ts    Tilstand og logikk for brettet (valg, tall, kandidater, angre)
+  scanner/                   Fra kamerabilde til 81 tall
+  tools/labeling/            Merkeverktøyet for treningsdata (?label)
 public/models/digits/        Den trente modellen
 ml/
   train.py                   Trener modellen
   export_tfjs.py             Eksporterer modellen til TensorFlow.js
+  requirements.txt           Python-pakkene
   data/                      Treningsdata (ikke i git)
 ```

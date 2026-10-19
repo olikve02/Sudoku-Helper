@@ -10,7 +10,7 @@ type Tracked = { delete(): void };
 
 const OUTPUT_SIZE = 28;
 const DIGIT_BOX = 20; // MNIST: siffer i 20x20 inni 28x28
-const EDGE_MARGIN = 2; // linjene er fjernet i CropCells, så liten margin holder
+const EDGE_MARGIN = 2; // linjene er fjernet i cropCells, så liten margin holder
 // Tersklene tilpasses kontrasten i hver celle (papir ≈ 255 etter normalisering)
 const MIN_CONTRAST = 45; // svakere enn dette = tom celle
 const LOOSE_RATIO = 0.35; // løs terskel: 35 % av veien fra papir mot mørkeste blekk
@@ -22,7 +22,11 @@ const EDGE_ZONE = 0.08; // komponenter innenfor 8 % av kanten kan være linjeres
 const THIN = 0.18; // en linjerest er smalere enn 18 % av cella...
 const LONG = 0.5; // ...og lengre enn 50 %
 
-export default async function processCroppedCells(
+/**
+ * Gjør hver celle om til et 28×28 bilde med hvitt siffer på svart bunn,
+ * sentrert og skalert slik modellen er trent på, og avgjør om cella er tom.
+ */
+export default async function processCells(
   croppedCells: HTMLCanvasElement[],
 ): Promise<ProcessedCell[]> {
   const cv = await cvReadyPromise;
