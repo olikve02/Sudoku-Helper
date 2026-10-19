@@ -9,6 +9,7 @@ Bruk:
     python ml/train.py                  # tren og lagre
     python ml/train.py --plot           # vis læringskurven etterpå
     python ml/train.py --show-mistakes  # vis valideringsbildene modellen bommer på
+    python ml/train.py --mnist 0        # tren uten MNIST, bare på egne bilder
 """
 
 import argparse
@@ -28,6 +29,9 @@ MODEL_PATH = ML_DIR / "digit-model.keras"
 TEST_SHEETS = [3, 20, 24, 26]
 VALIDATION_SHEETS = [5, 6, 21, 22]
 
+# Antall håndskrevne MNIST-sifre som blandes inn i treningen (0 = bare egne bilder)
+MNIST_COUNT = 10000
+
 
 def load_data():
     """Leser alle bildene. Returnerer bilder (0–1), klasser (0–8), arknummer og filnavn."""
@@ -46,6 +50,28 @@ def load_data():
     images = np.array(images) / 255
     labels = np.array(labels) - 1  # Keras vil ha klasser fra 0: sifrene 1–9 blir 0–8
     return images, labels, np.array(sheets), np.array(file_names)
+
+
+def load_mnist(count, seed=0):
+    """
+    Henter et tilfeldig utvalg håndskrevne sifre 1–9 fra MNIST, i samme format
+    som load_data(). processCells i appen lager bilder akkurat som MNIST
+    (sifferet skalert til 20 px og sentrert i 28×28), så de kan blandes rett inn.
+    """
+    if count == 0:
+        return np.empty((0, 28, 28, 1)), np.empty((0,), dtype=int)
+
+    (images, labels), _ = keras.datasets.mnist.load_data()
+
+    # Sudoku har ingen 0
+    no_zero = labels != 0
+    images, labels = images[no_zero], labels[no_zero]
+
+    # Bare et utvalg, så MNIST ikke overdøver dine egne bilder
+    chosen = np.random.default_rng(seed).choice(len(images), count, replace=False)
+    images = images[chosen].reshape(-1, 28, 28, 1) / 255
+    labels = labels[chosen] - 1
+    return images, labels
 
 
 def split_by_sheet(sheets):
@@ -103,11 +129,19 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--plot", action="store_true", help="vis læringskurven")
     parser.add_argument("--show-mistakes", action="store_true", help="vis feilene på valideringssettet")
+    parser.add_argument("--mnist", type=int, default=MNIST_COUNT, help=f"antall MNIST-bilder i treningen (standard {MNIST_COUNT})")
     args = parser.parse_args()
 
     images, labels, sheets, file_names = load_data()
     training, validation, test = split_by_sheet(sheets)
     print(f"Bilder: {len(images)}  trening: {training.sum()}  validering: {validation.sum()}  test: {test.sum()}")
+
+    # MNIST legges bare til i treningen. Validering og test er bare egne brett,
+    # siden det er de som viser om modellen virker i appen.
+    mnist_images, mnist_labels = load_mnist(args.mnist)
+    training_images = np.concatenate([images[training], mnist_images])
+    training_labels = np.concatenate([labels[training], mnist_labels])
+    print(f"Trener på {len(training_images)} bilder ({len(mnist_images)} fra MNIST)")
 
     model = build_model()
     model.summary()
@@ -117,8 +151,8 @@ def main():
         monitor="val_loss", patience=5, restore_best_weights=True
     )
     history = model.fit(
-        images[training],
-        labels[training],
+        training_images,
+        training_labels,
         epochs=100,
         validation_data=(images[validation], labels[validation]),
         callbacks=[early_stopping],
