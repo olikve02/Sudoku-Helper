@@ -61,3 +61,24 @@ model = keras.Sequential([
 ])
 
 model.summary()
+
+
+model.compile(
+    optimizer= "adam",
+    loss= "sparse_categorical_crossentropy",
+    metrics= ["accuracy"]
+)
+
+history = model.fit(
+    trainingImages,
+    trainingLabels,
+    epochs= 10,
+    validation_data= (validationImages, validationLabels)
+)
+
+accuracyHistory = history.history["accuracy"]
+validationAccuracyHistory = history.history["val_accuracy"]
+plt.plot(accuracyHistory)
+plt.plot(validationAccuracyHistory)
+plt.legend("training", "validation")
+plt.show()
