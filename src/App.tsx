@@ -61,8 +61,14 @@ function App() {
     guideBox: HTMLDivElement,
   ) {
     const digits = await scanBoard(video, guideBox);
-    board.setScannedValues(digits);
-    setScreen("board");
+    if (digits.length > 0) {
+      board.setScannedValues(digits);
+      setScreen("board");
+    } else {
+      alert(
+        "Fant ikke brettet. Hold det innenfor den grønne boksen og prøv igjen",
+      );
+    }
   }
 }
 export default App;

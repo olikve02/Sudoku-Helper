@@ -6,5 +6,3 @@ export type CellState = {
   candidates: number[];
   selected: boolean;
 };
-
-export type Screen = "board" | "camera";
