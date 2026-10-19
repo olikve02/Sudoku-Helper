@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
-import { Camera, Undo, Undo2 } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { Camera, Flashlight, FlashlightOff, Undo, Undo2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import "./CameraScanner.css";
 
 type CameraScannerProps = {
@@ -15,6 +15,7 @@ type CameraScannerProps = {
 function CameraScanner(props: CameraScannerProps) {
   const guideBoxRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [useFlash, setUseFlash] = useState(false);
 
   useEffect(() => {
     let cameraStream: MediaStream | undefined;
@@ -25,7 +26,29 @@ function CameraScanner(props: CameraScannerProps) {
           audio: false,
           video: { facingMode: "environment" },
         });
+        const track = stream.getVideoTracks()[0];
 
+        try {
+          const capabilities =
+            track.getCapabilities() as MediaTrackCapabilities & {
+              torch?: boolean;
+            };
+
+          if (capabilities.torch) {
+            await track.applyConstraints({
+              advanced: [{ torch: false } as MediaTrackConstraintSet],
+            });
+
+            setUseFlash(false);
+            console.log("Lommelykta er slått på!");
+          } else {
+            console.log("Lommelykta er ikkje støtta.");
+          }
+        } catch (error) {
+          console.error("Kunne ikkje slå på lommelykta:", error);
+        }
+
+        cameraStream = stream;
         cameraStream = stream;
 
         if (videoRef.current) {
@@ -70,9 +93,48 @@ function CameraScanner(props: CameraScannerProps) {
           }}
         />
         <Undo2 onClick={() => props.handlegoToPictureScreenClicked()}></Undo2>
+        {useFlash ? (
+          <Flashlight
+            className="icon-button"
+            onClick={() => handleToggleFlash()}
+          />
+        ) : (
+          <FlashlightOff
+            className="icon-button"
+            onClick={() => handleToggleFlash()}
+          />
+        )}
       </Box>
     </Box>
   );
+
+  async function handleToggleFlash() {
+    const stream = videoRef.current?.srcObject as MediaStream | null;
+    const track = stream?.getVideoTracks()[0];
+
+    if (!track) return;
+
+    const capabilities = track.getCapabilities() as MediaTrackCapabilities & {
+      torch?: boolean;
+    };
+
+    if (!capabilities.torch) {
+      console.log("Lommelykta er ikkje støtta.");
+      return;
+    }
+
+    const newState = !useFlash;
+
+    try {
+      await track.applyConstraints({
+        advanced: [{ torch: newState } as MediaTrackConstraintSet],
+      });
+
+      setUseFlash(newState);
+    } catch (error) {
+      console.error("Kunne ikkje endre lommelykta:", error);
+    }
+  }
 }
 
 export default CameraScanner;
