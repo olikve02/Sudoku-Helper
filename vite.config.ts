@@ -4,6 +4,6 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   server: {
-    allowedHosts: ["amongst-color-prospects-applicants.trycloudflare.com"],
+    allowedHosts: ["casual-exists-graduation-dig.trycloudflare.com"],
   },
 });

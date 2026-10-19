@@ -1,12 +1,50 @@
-import recognizeSudoku from "../RecognizeSudoku";
+import recognizeSudoku, { testScaleImages } from "./RecognizeSudoku";
 import { processImageWithOpenCV } from "./DetectSudokuBoard";
 import cropCells from "./CropCells";
+import recognizeHandwriting from "./RecognizeNumbert";
 
 export default async function takePicture(
   video: HTMLVideoElement | undefined,
   guideBox: HTMLDivElement | undefined,
 ): Promise<number[]> {
-  if (!video || !guideBox) return [];
+  //Take image and crop the image to the guidebox
+  const canvas = cropBoard(video, guideBox);
+  if (!canvas) return [];
+
+  //Transform the board so that the image is straight
+  const correctedBoard = await processImageWithOpenCV(canvas);
+  if (!correctedBoard) return [];
+  //Crop all the cells
+  const croppedCells = await cropCells(correctedBoard);
+  //Predicted numbers
+  const predictions = await recognizeHandwriting(croppedCells);
+
+  return predictions;
+}
+
+export async function testImages(
+  video: HTMLVideoElement | undefined,
+  guideBox: HTMLDivElement | undefined,
+): Promise<string[]> {
+  const canvas = cropBoard(video, guideBox);
+  if (!canvas) return [];
+
+  const correctedBoard = await processImageWithOpenCV(canvas);
+  if (!correctedBoard) return [];
+  const cellImages = await cropCells(correctedBoard);
+  const cellImagesString = cellImages.map((image) =>
+    image.toDataURL("image/url"),
+  );
+  const preparedCellImages = await testScaleImages(cellImagesString);
+
+  return preparedCellImages;
+}
+
+function cropBoard(
+  video: HTMLVideoElement | undefined,
+  guideBox: HTMLDivElement | undefined,
+): HTMLCanvasElement | undefined {
+  if (!video || !guideBox) return undefined;
 
   const canvas = document.createElement("canvas");
 
@@ -31,10 +69,5 @@ export default async function takePicture(
   }
 
   context.drawImage(video, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
-
-  const correctedBoard = await processImageWithOpenCV(canvas);
-  const cellImages = await cropCells(correctedBoard);
-  const predictions = await recognizeSudoku(cellImages);
-
-  return predictions;
+  return canvas;
 }
