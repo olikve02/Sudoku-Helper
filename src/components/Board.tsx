@@ -1,33 +1,24 @@
 import Grid from "@mui/material/Grid";
-import "../App.css";
 import Cell from "./Cell";
+import type { CellState } from "../types";
 
-type BoardPropsType = {
-  cells: {
-    row: number;
-    cell: number;
-    value: number | null;
-    candidates: number[];
-    selected: boolean;
-  }[];
-  handleCellClicked: (row: number, cell: number) => void;
+type BoardProps = {
+  cells: CellState[];
+  onCellClick: (row: number, col: number) => void;
 };
 
-function Board(props: BoardPropsType) {
+function Board({ cells, onCellClick }: BoardProps) {
   return (
     <Grid container columns={9} className="board">
-      {props.cells.map((cell) => (
+      {cells.map((cell) => (
         <Cell
-          key={`${cell.row} - ${cell.cell}`}
-          row={cell.row}
-          cell={cell.cell}
-          value={cell.value}
-          candidates={cell.candidates}
-          selected={cell.selected}
-          handleCellClicked={props.handleCellClicked}
-        ></Cell>
+          key={`${cell.row}-${cell.col}`}
+          cell={cell}
+          onClick={() => onCellClick(cell.row, cell.col)}
+        />
       ))}
     </Grid>
   );
 }
+
 export default Board;

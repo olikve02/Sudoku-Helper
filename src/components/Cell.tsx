@@ -1,32 +1,30 @@
 import Grid from "@mui/material/Grid";
-import "../App.css";
 import Candidates from "./Candidates";
+import type { CellState } from "../types";
 
-type CellPropsType = {
-  row: number;
-  cell: number;
-  value: number | null;
-  candidates: number[];
-  selected: boolean;
-  handleCellClicked: (row: number, cell: number) => void;
+type CellProps = {
+  cell: CellState;
+  onClick: () => void;
 };
 
-function Cell(props: CellPropsType) {
+function Cell({ cell, onClick }: CellProps) {
+  // Tykke linjer mellom 3×3-boksene
+  const classes = [
+    "sudoku-cell",
+    cell.row === 4 || cell.row === 7 ? "border-top-thick" : "",
+    cell.col === 4 || cell.col === 7 ? "border-left-thick" : "",
+    cell.selected ? "cell-selected" : "",
+  ];
+
   return (
-    <Grid
-      size={1}
-      className={`sudoku-cell 
-        ${props.row == 4 || props.row == 7 ? "border-top-thick" : ""} 
-        ${props.cell == 4 || props.cell == 7 ? "border-left-thick" : ""}
-        ${props.selected ? "cell-selected" : ""}`}
-      onClick={() => props.handleCellClicked(props.row, props.cell)}
-    >
-      {props.value ? (
-        <span className="sudoku-value">{props.value}</span>
+    <Grid size={1} className={classes.join(" ")} onClick={onClick}>
+      {cell.value ? (
+        <span className="sudoku-value">{cell.value}</span>
       ) : (
-        <Candidates candidates={props.candidates}></Candidates>
+        <Candidates candidates={cell.candidates} />
       )}
     </Grid>
   );
 }
+
 export default Cell;

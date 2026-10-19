@@ -4,19 +4,22 @@ import { useEffect, useRef, useState } from "react";
 import "./CameraScanner.css";
 
 type CameraScannerProps = {
-  goToPictureScreen: boolean;
-  handlegoToPictureScreenClicked: () => void;
-  handleTakePictureClicked: (
-    video: HTMLVideoElement,
-    guideBox: HTMLDivElement,
-  ) => Promise<void>;
+  onCapture: (video: HTMLVideoElement, guideBox: HTMLDivElement) => Promise<void>;
+  onBack: () => void;
 };
 
-function CameraScanner(props: CameraScannerProps) {
+// Lommelykt (torch) er ikke med i TypeScript sine standardtyper ennå
+type TorchCapabilities = MediaTrackCapabilities & { torch?: boolean };
+const torchConstraint = (on: boolean) => ({
+  advanced: [{ torch: on } as MediaTrackConstraintSet],
+});
+
+function CameraScanner({ onCapture, onBack }: CameraScannerProps) {
   const guideBoxRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [useFlash, setUseFlash] = useState(false);
+  const [flashOn, setFlashOn] = useState(false);
 
+  // Start bakkameraet når skjermen vises, og stopp det når den lukkes
   useEffect(() => {
     let cameraStream: MediaStream | undefined;
 
@@ -26,34 +29,26 @@ function CameraScanner(props: CameraScannerProps) {
           audio: false,
           video: { facingMode: "environment" },
         });
-        const track = stream.getVideoTracks()[0];
-
-        try {
-          const capabilities =
-            track.getCapabilities() as MediaTrackCapabilities & {
-              torch?: boolean;
-            };
-
-          if (capabilities.torch) {
-            await track.applyConstraints({
-              advanced: [{ torch: false } as MediaTrackConstraintSet],
-            });
-
-            setUseFlash(false);
-          } else {
-            console.log("Lommelykta er ikkje støtta.");
-          }
-        } catch (error) {
-          console.error("Kunne ikkje slå av lommelykta:", error);
-        }
-
         cameraStream = stream;
 
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
+
+        // Sørg for at lommelykta starter avslått. Egen try, så kameraet virker
+        // selv om nettleseren ikke støtter getCapabilities
+        try {
+          const track = stream.getVideoTracks()[0];
+          const capabilities = track.getCapabilities() as TorchCapabilities;
+          if (capabilities.torch) {
+            await track.applyConstraints(torchConstraint(false));
+            setFlashOn(false);
+          }
+        } catch (error) {
+          console.error("Kunne ikke slå av lommelykta:", error);
+        }
       } catch (error) {
-        console.error("Camera did not start:", error);
+        console.error("Kameraet startet ikke:", error);
       }
     }
 
@@ -77,54 +72,36 @@ function CameraScanner(props: CameraScannerProps) {
           className="icon-button camera-icon"
           onClick={async () => {
             if (videoRef.current && guideBoxRef.current) {
-              await props.handleTakePictureClicked(
-                videoRef.current,
-                guideBoxRef.current,
-              );
+              await onCapture(videoRef.current, guideBoxRef.current);
             }
           }}
         />
-        <Undo2 onClick={() => props.handlegoToPictureScreenClicked()}></Undo2>
-        {useFlash ? (
-          <Flashlight
-            className="icon-button"
-            onClick={() => handleToggleFlash()}
-          />
+        <Undo2 onClick={onBack} />
+        {flashOn ? (
+          <Flashlight className="icon-button" onClick={toggleFlash} />
         ) : (
-          <FlashlightOff
-            className="icon-button"
-            onClick={() => handleToggleFlash()}
-          />
+          <FlashlightOff className="icon-button" onClick={toggleFlash} />
         )}
       </Box>
     </Box>
   );
 
-  async function handleToggleFlash() {
+  async function toggleFlash() {
     const stream = videoRef.current?.srcObject as MediaStream | null;
     const track = stream?.getVideoTracks()[0];
-
     if (!track) return;
 
-    const capabilities = track.getCapabilities() as MediaTrackCapabilities & {
-      torch?: boolean;
-    };
-
+    const capabilities = track.getCapabilities() as TorchCapabilities;
     if (!capabilities.torch) {
-      console.log("Lommelykta er ikkje støtta.");
+      console.log("Lommelykt støttes ikke på denne enheten.");
       return;
     }
 
-    const newState = !useFlash;
-
     try {
-      await track.applyConstraints({
-        advanced: [{ torch: newState } as MediaTrackConstraintSet],
-      });
-
-      setUseFlash(newState);
+      await track.applyConstraints(torchConstraint(!flashOn));
+      setFlashOn(!flashOn);
     } catch (error) {
-      console.error("Kunne ikkje endre lommelykta:", error);
+      console.error("Kunne ikke endre lommelykta:", error);
     }
   }
 }

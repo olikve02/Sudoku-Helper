@@ -1,33 +1,35 @@
-import { processImageWithOpenCV } from "./DetectSudokuBoard";
-import cropCells from "./CropCells";
-import processCroppedCells from "./ProcessCroppedCells";
-import recognizeNumbers from "./RecognizeNumbert";
+import detectBoard from "./detectBoard";
+import cropCells from "./cropCells";
+import processCells from "./processCells";
+import recognizeDigits from "./recognizeDigits";
 
-export default async function takePicture(
-  video: HTMLVideoElement | undefined,
-  guideBox: HTMLDivElement | undefined,
+/**
+ * Tar bilde av området innenfor guideboksen og gjenkjenner sudokubrettet.
+ * Returnerer 81 tall (rad for rad): 0 for tomme celler, ellers 1–9.
+ * Returnerer en tom liste hvis brettet ikke ble funnet.
+ */
+export default async function scanBoard(
+  video: HTMLVideoElement,
+  guideBox: HTMLDivElement,
 ): Promise<number[]> {
-  //Take image and crop the image to the guidebox
-  const canvas = cropBoard(video, guideBox);
-  if (!canvas) return [];
+  // Klipp ut området innenfor guideboksen
+  const image = captureGuideBox(video, guideBox);
 
-  //Transform the board so that the image is straight
-  const correctedBoard = await processImageWithOpenCV(canvas);
-  if (!correctedBoard) return [];
-  //Crop all the cells
-  const croppedCells = await cropCells(correctedBoard);
-  //Processed Cells
-  const processedCells = await processCroppedCells(croppedCells);
-  //Recognize the numbers (0 = empty cell)
-  return recognizeNumbers(processedCells);
+  // Finn brettet og rett opp perspektivet
+  const board = await detectBoard(image);
+  if (!board) return [];
+
+  // Del i 81 celler, gjør dem klare for modellen og gjenkjenn sifrene
+  const cells = await cropCells(board);
+  const processedCells = await processCells(cells);
+  return recognizeDigits(processedCells);
 }
 
-function cropBoard(
-  video: HTMLVideoElement | undefined,
-  guideBox: HTMLDivElement | undefined,
-): HTMLCanvasElement | undefined {
-  if (!video || !guideBox) return undefined;
-
+// Tegner den delen av videoen som ligger innenfor guideboksen over på et canvas
+function captureGuideBox(
+  video: HTMLVideoElement,
+  guideBox: HTMLDivElement,
+): HTMLCanvasElement {
   const canvas = document.createElement("canvas");
 
   const guideRect = guideBox.getBoundingClientRect();
@@ -45,7 +47,6 @@ function cropBoard(
   const sh = guideRect.height * scaleY;
 
   const context = canvas.getContext("2d");
-
   if (!context) {
     throw new Error("Kunne ikke opprette canvas-kontekst");
   }

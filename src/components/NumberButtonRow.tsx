@@ -1,23 +1,25 @@
 import { Box } from "@mui/material";
 
-type ButtonRowProps = {
-  handleNumberButtonClicked: (number: number) => void;
+type NumberButtonRowProps = {
+  onNumberClick: (number: number) => void;
 };
 
-function ButtonRow(props: ButtonRowProps) {
-  const buttons = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+const NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+function NumberButtonRow({ onNumberClick }: NumberButtonRowProps) {
   return (
     <Box className="button-row">
-      {buttons.map((button) => (
+      {NUMBERS.map((number) => (
         <button
-          key={button}
-          onClick={() => props.handleNumberButtonClicked(button + 1)}
+          key={number}
+          onClick={() => onNumberClick(number)}
           className="number-button"
         >
-          {button + 1}
+          {number}
         </button>
       ))}
     </Box>
   );
 }
-export default ButtonRow;
+
+export default NumberButtonRow;
