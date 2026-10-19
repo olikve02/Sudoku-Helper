@@ -1,4 +1,3 @@
-import { testScaleImages } from "./RecognizeSudoku";
 import { processImageWithOpenCV } from "./DetectSudokuBoard";
 import cropCells from "./CropCells";
 import processCroppedCells from "./ProcessCroppedCells";
@@ -21,24 +20,6 @@ export default async function takePicture(
   const processedCells = await processCroppedCells(croppedCells);
   //Recognize the numbers (0 = empty cell)
   return recognizeNumbers(processedCells);
-}
-
-export async function testImages(
-  video: HTMLVideoElement | undefined,
-  guideBox: HTMLDivElement | undefined,
-): Promise<string[]> {
-  const canvas = cropBoard(video, guideBox);
-  if (!canvas) return [];
-
-  const correctedBoard = await processImageWithOpenCV(canvas);
-  if (!correctedBoard) return [];
-  const cellImages = await cropCells(correctedBoard);
-  const cellImagesString = cellImages.map((image) =>
-    image.toDataURL("image/url"),
-  );
-  const preparedCellImages = await testScaleImages(cellImagesString);
-
-  return preparedCellImages;
 }
 
 function cropBoard(

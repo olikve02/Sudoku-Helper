@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import { Camera, Flashlight, FlashlightOff, Undo, Undo2 } from "lucide-react";
+import { Camera, Flashlight, FlashlightOff, Undo2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import "./CameraScanner.css";
 
@@ -40,15 +40,13 @@ function CameraScanner(props: CameraScannerProps) {
             });
 
             setUseFlash(false);
-            console.log("Lommelykta er slått på!");
           } else {
             console.log("Lommelykta er ikkje støtta.");
           }
         } catch (error) {
-          console.error("Kunne ikkje slå på lommelykta:", error);
+          console.error("Kunne ikkje slå av lommelykta:", error);
         }
 
-        cameraStream = stream;
         cameraStream = stream;
 
         if (videoRef.current) {
@@ -74,12 +72,6 @@ function CameraScanner(props: CameraScannerProps) {
       </Box>
 
       <Box className="camera-button-row">
-        {/* 
-        <Undo2
-          className="icon-button undo-icon-button"
-          onClick={() => props.handlegoToPictureScreenClicked()}
-        />
-        */}
         <Camera
           size={40}
           className="icon-button camera-icon"
