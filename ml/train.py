@@ -62,8 +62,6 @@ model = keras.Sequential([
     keras.layers.Input(shape= (28,28,1)),
 
 
-    keras.layers.RandomRotation(0.02),
-
     keras.layers.Conv2D(32, (3,3), activation = "relu"),
     keras.layers.MaxPooling2D((2, 2)),
 
@@ -98,6 +96,7 @@ history = model.fit(
 
 print(model.evaluate(testImages, testLabels))
 
+model.save("ml/digit-model.keras")
 
 #accuracyHistory = history.history["accuracy"]
 #validationAccuracyHistory = history.history["val_accuracy"]
