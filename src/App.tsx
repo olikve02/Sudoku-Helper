@@ -30,7 +30,7 @@ function App() {
         <div>
           <Board cells={board.cells} onCellClick={board.selectCell} />
           <Box className="icon-row">
-            <Eraser className="icon-button" onClick={board.clearSelection} />
+            <Eraser className="icon-button" onClick={board.erase} />
             <Grid2x2Check
               className={`icon-button ${board.selectMultiple ? "selected" : ""}`}
               onClick={board.toggleSelectMultiple}

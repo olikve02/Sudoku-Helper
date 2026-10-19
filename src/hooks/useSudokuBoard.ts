@@ -43,11 +43,6 @@ export default function useSudokuBoard() {
     setCells(newCells);
   }
 
-  // Fjerner markeringen fra alle celler
-  function clearSelection() {
-    setCells(cells.map((cell) => ({ ...cell, selected: false })));
-  }
-
   // Går tilbake til brettet slik det var før forrige endring
   function undo() {
     const previous = history.at(-1);
@@ -66,6 +61,18 @@ export default function useSudokuBoard() {
       })),
     );
   }
+  //Fjerner alt i cellene som er markert
+  function erase() {
+    const newCells = cells.map((cell) => {
+      if (cell.selected) {
+        return { ...cell, value: null, candidates: [] };
+      } else {
+        return cell;
+      }
+    });
+    setHistory([...history, cells]);
+    setCells(newCells);
+  }
 
   return {
     cells,
@@ -73,9 +80,9 @@ export default function useSudokuBoard() {
     candidateMode,
     selectCell,
     enterNumber,
-    clearSelection,
     undo,
     setScannedValues,
+    erase,
     toggleSelectMultiple: () => setSelectMultiple(!selectMultiple),
     toggleCandidateMode: () => setCandidateMode(!candidateMode),
   };
