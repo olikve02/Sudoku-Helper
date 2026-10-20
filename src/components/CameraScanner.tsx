@@ -4,7 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import "./CameraScanner.css";
 
 type CameraScannerProps = {
-  onCapture: (video: HTMLVideoElement, guideBox: HTMLDivElement) => Promise<void>;
+  onCapture: (
+    video: HTMLVideoElement,
+    guideBox: HTMLDivElement,
+  ) => Promise<void>;
   onBack: () => void;
 };
 
@@ -72,20 +75,28 @@ function CameraScanner({ onCapture, onBack }: CameraScannerProps) {
       </Box>
 
       <Box className="camera-button-row">
+        <Undo2 onClick={onBack} size={40} className="icon-buton" />
         <Camera
           size={40}
-          className="icon-button camera-icon"
+          className="icon-button"
           onClick={async () => {
             if (videoRef.current && guideBoxRef.current) {
               await onCapture(videoRef.current, guideBoxRef.current);
             }
           }}
         />
-        <Undo2 onClick={onBack} />
         {flashOn ? (
-          <Flashlight className="icon-button" onClick={toggleFlash} />
+          <Flashlight
+            size={40}
+            className="icon-button flash-icon"
+            onClick={toggleFlash}
+          />
         ) : (
-          <FlashlightOff className="icon-button" onClick={toggleFlash} />
+          <FlashlightOff
+            size={40}
+            className="icon-button flash-icon"
+            onClick={toggleFlash}
+          />
         )}
       </Box>
     </Box>
