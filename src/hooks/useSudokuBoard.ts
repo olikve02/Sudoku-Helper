@@ -105,7 +105,18 @@ export default function useSudokuBoard() {
 }
 //Returns true if cells are is in same row, column or block
 function isPeer(cell1: CellState, cell2: CellState): boolean {
-  if (cell1.row === cell2.row || cell1.col === cell2.col) return true;
+  const cell1BlockRow = Math.floor((cell1.row - 1) / 3);
+  const cell1BlockCol = Math.floor((cell1.col - 1) / 3);
+
+  const cell2BlockRow = Math.floor((cell2.row - 1) / 3);
+  const cell2BlockCol = Math.floor((cell2.col - 1) / 3);
+
+  if (
+    cell1.row === cell2.row ||
+    cell1.col === cell2.col ||
+    (cell1BlockRow === cell2BlockRow && cell1BlockCol == cell2BlockCol)
+  )
+    return true;
   return false;
 }
 
