@@ -17,7 +17,7 @@ const showLabelingTool = new URLSearchParams(window.location.search).has(
 type Screen = "board" | "camera";
 
 function App() {
-  const [screen, setScreen] = useState<Screen>("camera");
+  const [screen, setScreen] = useState<Screen>("board");
   const board = useSudokuBoard();
 
   if (showLabelingTool) {
