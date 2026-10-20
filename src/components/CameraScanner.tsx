@@ -27,7 +27,12 @@ function CameraScanner({ onCapture, onBack }: CameraScannerProps) {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: false,
-          video: { facingMode: "environment" },
+          // Be om høy oppløsning. Uten dette gir mange telefoner bare 640×480
+          video: {
+            facingMode: "environment",
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
+          },
         });
         cameraStream = stream;
 
