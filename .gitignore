@@ -30,3 +30,4 @@ ml/.venv
 
 # Programmer som ikke hører hjemme i repoet
 cloudflared.exe
+test-images/
