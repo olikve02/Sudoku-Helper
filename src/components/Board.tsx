@@ -5,6 +5,7 @@ import type { CellState } from "../types";
 type BoardProps = {
   cells: CellState[];
   onCellClick: (row: number, col: number) => void;
+  hasConflict: 
 };
 
 function Board({ cells, onCellClick }: BoardProps) {

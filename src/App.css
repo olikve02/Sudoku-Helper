@@ -41,6 +41,7 @@
   display: grid;
   grid-template-columns: repeat(9, minmax(0, 1fr));
   gap: 2px;
+  padding-top: 20px;
 }
 
 /* Number buttons */
@@ -88,6 +89,7 @@
   display: flex;
   justify-content: space-between;
   width: min(92vw, 520px);
+  padding-top: 20px;
 }
 
 .border-top-thick {
