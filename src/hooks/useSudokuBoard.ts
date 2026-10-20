@@ -26,17 +26,33 @@ export default function useSudokuBoard() {
 
   // Setter tallet i de valgte cellene, eller slår kandidaten av/på i kandidatmodus
   function enterNumber(number: number) {
-    const newCells = cells.map((cell) => {
-      if (!cell.selected) return cell;
+    const selectedCells = cells.filter((cell) => cell.selected == true);
 
-      if (!candidateMode) {
-        return { ...cell, value: number };
+    const newCells = cells.map((cell) => {
+      if (cell.selected) {
+        if (!candidateMode) {
+          return { ...cell, value: number };
+        }
+
+        const candidates = cell.candidates.includes(number)
+          ? cell.candidates.filter((candidate) => candidate !== number)
+          : [...cell.candidates, number];
+        return { ...cell, candidates };
       }
 
-      const candidates = cell.candidates.includes(number)
-        ? cell.candidates.filter((candidate) => candidate !== number)
-        : [...cell.candidates, number];
-      return { ...cell, candidates };
+      if (
+        selectedCells.some((cell2) => isPeer(cell, cell2)) &&
+        !candidateMode
+      ) {
+        return {
+          ...cell,
+          candidates: cell.candidates.filter(
+            (candidate) => candidate != number,
+          ),
+        };
+      }
+
+      return cell;
     });
 
     setHistory([...history, cells]);
@@ -86,6 +102,11 @@ export default function useSudokuBoard() {
     toggleSelectMultiple: () => setSelectMultiple(!selectMultiple),
     toggleCandidateMode: () => setCandidateMode(!candidateMode),
   };
+}
+//Returns true if cells are is in same row, column or block
+function isPeer(cell1: CellState, cell2: CellState): boolean {
+  if (cell1.row === cell2.row || cell1.col === cell2.col) return true;
+  return false;
 }
 
 function createEmptyBoard(): CellState[] {
