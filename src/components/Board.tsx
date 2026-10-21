@@ -1,7 +1,11 @@
 import Grid from "@mui/material/Grid";
 import Cell from "./Cell";
 import type { CellState } from "../types";
-import { hasConflict, isPeerOfSelectedCell } from "../hooks/useSudokuBoard";
+import {
+  hasConflict,
+  isPeerOfSelectedCell,
+  sameValueAsSelected,
+} from "../hooks/useSudokuBoard";
 
 type BoardProps = {
   cells: CellState[];
@@ -18,6 +22,7 @@ function Board({ cells, onCellClick }: BoardProps) {
           hasConflict={hasConflict(cell, cells)}
           onClick={() => onCellClick(cell.row, cell.col)}
           isPeer={isPeerOfSelectedCell(cell, cells)}
+          sameValueAsSelected={sameValueAsSelected(cell, cells)}
         />
       ))}
     </Grid>
