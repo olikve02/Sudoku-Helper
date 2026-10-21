@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { CellState } from "../types";
+import { solve } from "../sudoku/solver";
 
 /**
  * All tilstand og logikk for sudokubrettet: hvilke celler som er valgt,
@@ -10,10 +11,12 @@ export default function useSudokuBoard() {
   const [history, setHistory] = useState<CellState[][]>([]);
   const [selectMultiple, setSelectMultiple] = useState(false);
   const [candidateMode, setCandidateMode] = useState(false);
+  const [solution, setSolution] = useState<number[] | null>(loadSolution);
 
   useEffect(() => {
     localStorage.setItem("cells", JSON.stringify(cells));
-  }, [cells]);
+    localStorage.setItem("solution", JSON.stringify(solution));
+  }, [cells, solution]);
 
   // Velger en celle. I flervalgsmodus slås cella av og på uten å påvirke de andre.
   function selectCell(row: number, col: number) {
@@ -74,10 +77,19 @@ export default function useSudokuBoard() {
 
   // Legger inn 81 skannede tall (0 = tom celle)
   function setScannedValues(digits: number[]) {
+    const board = [...digits];
+    if (solve(board)) {
+      setSolution(board);
+    } else {
+      setSolution(null);
+    }
+
     setCells(
       cells.map((cell, index) => ({
         ...cell,
         value: digits[index] ? digits[index] : null,
+        candidates: [],
+        selected: false,
       })),
     );
   }
@@ -98,6 +110,7 @@ export default function useSudokuBoard() {
     if (confirm("Vil du tømme brettet")) {
       const newCells = createEmptyBoard();
       setCells(newCells);
+      setSolution(null);
     }
   }
 
@@ -111,6 +124,7 @@ export default function useSudokuBoard() {
     setScannedValues,
     erase,
     clearBoard,
+    solution,
     toggleSelectMultiple: () => setSelectMultiple(!selectMultiple),
     toggleCandidateMode: () => setCandidateMode(!candidateMode),
   };
@@ -151,6 +165,17 @@ export function hasConflict(cell: CellState, cells: CellState[]): boolean {
       (cell.col !== cell2.col || cell.row !== cell2.row),
   );
   return hasConflict;
+}
+
+export function isWrong(
+  cell: CellState,
+  index: number,
+  solution: number[] | null,
+): boolean {
+  if (!solution) return false;
+  if (!cell.value) return false;
+  if (cell.value !== solution[index]) return true;
+  return false;
 }
 
 export function sameValueAsSelected(
@@ -195,4 +220,16 @@ function loadBoard(): CellState[] {
     return createEmptyBoard();
   }
   return createEmptyBoard();
+}
+
+function loadSolution(): number[] | null {
+  const localSolution = localStorage.getItem("solution");
+  try {
+    if (localSolution) {
+      return JSON.parse(localSolution);
+    }
+  } catch {
+    return null;
+  }
+  return null;
 }

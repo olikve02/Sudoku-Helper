@@ -26,6 +26,23 @@
   color: #f87171;
 }
 
+/* Feil tall i forhold til løsningen: rød tekst og en liten rød strek under
+   tallet, som en stavekontroll. Står etter .cell-same-value, så rødt vinner. */
+.wrong-cell .sudoku-value {
+  color: #f87171;
+}
+
+.wrong-cell::after {
+  content: "";
+  position: absolute;
+  left: 30%;
+  right: 30%;
+  bottom: 12%;
+  height: 2px;
+  border-radius: 1px;
+  background-color: #f87171;
+}
+
 .cell-conflict {
   animation: conflict-shake 0.35s ease-in-out;
 }
