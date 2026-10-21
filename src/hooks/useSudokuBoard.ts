@@ -11,11 +11,12 @@ export default function useSudokuBoard() {
   const [history, setHistory] = useState<CellState[][]>([]);
   const [selectMultiple, setSelectMultiple] = useState(false);
   const [candidateMode, setCandidateMode] = useState(false);
-  const [solution, setSolution] = useState<number[] | null>(null);
+  const [solution, setSolution] = useState<number[] | null>(loadSolution);
 
   useEffect(() => {
     localStorage.setItem("cells", JSON.stringify(cells));
-  }, [cells]);
+    localStorage.setItem("solution", JSON.stringify(solution));
+  }, [cells, solution]);
 
   // Velger en celle. I flervalgsmodus slås cella av og på uten å påvirke de andre.
   function selectCell(row: number, col: number) {
@@ -109,6 +110,7 @@ export default function useSudokuBoard() {
     if (confirm("Vil du tømme brettet")) {
       const newCells = createEmptyBoard();
       setCells(newCells);
+      setSolution(null);
     }
   }
 
@@ -218,4 +220,16 @@ function loadBoard(): CellState[] {
     return createEmptyBoard();
   }
   return createEmptyBoard();
+}
+
+function loadSolution(): number[] | null {
+  const localSolution = localStorage.getItem("solution");
+  try {
+    if (localSolution) {
+      return JSON.parse(localSolution);
+    }
+  } catch {
+    return null;
+  }
+  return null;
 }
