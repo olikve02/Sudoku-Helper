@@ -7,9 +7,16 @@ type CellProps = {
   onClick: () => void;
   hasConflict: boolean;
   isPeer: boolean;
+  sameValueAsSelected: boolean;
 };
 
-function Cell({ cell, onClick, hasConflict, isPeer }: CellProps) {
+function Cell({
+  cell,
+  onClick,
+  hasConflict,
+  isPeer,
+  sameValueAsSelected,
+}: CellProps) {
   // Tykke linjer mellom 3×3-boksene
   const classes = [
     "sudoku-cell",
@@ -18,6 +25,7 @@ function Cell({ cell, onClick, hasConflict, isPeer }: CellProps) {
     cell.selected ? "cell-selected" : "",
     isPeer ? "cell-peer" : "",
     hasConflict ? "cell-conflict" : "",
+    sameValueAsSelected ? "cell-selected" : "",
   ];
 
   return (

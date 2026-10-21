@@ -141,6 +141,16 @@ export function hasConflict(cell: CellState, cells: CellState[]): boolean {
   return hasConflict;
 }
 
+export function sameValueAsSelected(
+  cell: CellState,
+  cells: CellState[],
+): boolean {
+  if (cell.selected) return false;
+  if (cell.value === null) return false;
+
+  return cells.some((cell2) => cell.value === cell2.value && cell2.selected);
+}
+
 function createEmptyBoard(): CellState[] {
   const cells: CellState[] = [];
   for (let row = 1; row <= 9; row++) {
