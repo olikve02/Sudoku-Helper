@@ -5,9 +5,10 @@ import type { CellState } from "../types";
 type CellProps = {
   cell: CellState;
   onClick: () => void;
+  hasConflict: boolean;
 };
 
-function Cell({ cell, onClick }: CellProps) {
+function Cell({ cell, onClick, hasConflict }: CellProps) {
   // Tykke linjer mellom 3×3-boksene
   const classes = [
     "sudoku-cell",
@@ -19,7 +20,9 @@ function Cell({ cell, onClick }: CellProps) {
   return (
     <Grid size={1} className={classes.join(" ")} onClick={onClick}>
       {cell.value ? (
-        <span className="sudoku-value">{cell.value}</span>
+        <span className={`sudoku-value ${hasConflict ? "cell-conflict" : ""}`}>
+          {cell.value}
+        </span>
       ) : (
         <Candidates candidates={cell.candidates} />
       )}

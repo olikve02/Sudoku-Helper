@@ -120,6 +120,18 @@ function isPeer(cell1: CellState, cell2: CellState): boolean {
   return false;
 }
 
+export function hasConflict(cell: CellState, cells: CellState[]): boolean {
+  if (!cell.value) return false;
+
+  const hasConflict = cells.some(
+    (cell2) =>
+      isPeer(cell, cell2) &&
+      cell.value === cell2.value &&
+      (cell.col !== cell2.col || cell.row !== cell2.row),
+  );
+  return hasConflict;
+}
+
 function createEmptyBoard(): CellState[] {
   const cells: CellState[] = [];
   for (let row = 1; row <= 9; row++) {
