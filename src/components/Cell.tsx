@@ -15,14 +15,13 @@ function Cell({ cell, onClick, hasConflict }: CellProps) {
     cell.row === 4 || cell.row === 7 ? "border-top-thick" : "",
     cell.col === 4 || cell.col === 7 ? "border-left-thick" : "",
     cell.selected ? "cell-selected" : "",
+    hasConflict ? "cell-conflict" : "",
   ];
 
   return (
     <Grid size={1} className={classes.join(" ")} onClick={onClick}>
       {cell.value ? (
-        <span className={`sudoku-value ${hasConflict ? "cell-conflict" : ""}`}>
-          {cell.value}
-        </span>
+        <span className={`sudoku-value`}>{cell.value}</span>
       ) : (
         <Candidates candidates={cell.candidates} />
       )}
