@@ -11,6 +11,17 @@
   overflow: hidden;
 }
 
+/* Samme tall som den valgte cella: lilla tall og svak lilla bakgrunn, uten ramme.
+   Står før konfliktreglene, så rød tekst vinner hvis cella også er i konflikt. */
+.cell-same-value {
+  background-color: rgba(81, 65, 138, 0.25);
+}
+
+.cell-same-value .sudoku-value {
+  color: #c4b5fd;
+  font-weight: 600;
+}
+
 .cell-conflict .sudoku-value {
   color: #f87171;
 }
