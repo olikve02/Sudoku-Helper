@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { CellState } from "../types";
 
 /**
@@ -6,10 +6,14 @@ import type { CellState } from "../types";
  * tall og kandidater, og angre-historikk.
  */
 export default function useSudokuBoard() {
-  const [cells, setCells] = useState<CellState[]>(createEmptyBoard);
+  const [cells, setCells] = useState<CellState[]>(loadBoard);
   const [history, setHistory] = useState<CellState[][]>([]);
   const [selectMultiple, setSelectMultiple] = useState(false);
   const [candidateMode, setCandidateMode] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem("cells", JSON.stringify(cells));
+  }, [cells]);
 
   // Velger en celle. I flervalgsmodus slås cella av og på uten å påvirke de andre.
   function selectCell(row: number, col: number) {
@@ -171,4 +175,14 @@ function createEmptyBoard(): CellState[] {
     }
   }
   return cells;
+}
+
+function loadBoard(): CellState[] {
+  const localCells = localStorage.getItem("cells");
+  try {
+    if (localCells) {
+      return JSON.parse(localCells);
+    }
+  } catch {}
+  return createEmptyBoard();
 }
