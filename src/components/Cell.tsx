@@ -6,15 +6,17 @@ type CellProps = {
   cell: CellState;
   onClick: () => void;
   hasConflict: boolean;
+  isPeer: boolean;
 };
 
-function Cell({ cell, onClick, hasConflict }: CellProps) {
+function Cell({ cell, onClick, hasConflict, isPeer }: CellProps) {
   // Tykke linjer mellom 3×3-boksene
   const classes = [
     "sudoku-cell",
     cell.row === 4 || cell.row === 7 ? "border-top-thick" : "",
     cell.col === 4 || cell.col === 7 ? "border-left-thick" : "",
     cell.selected ? "cell-selected" : "",
+    isPeer ? "cell-peer" : "",
     hasConflict ? "cell-conflict" : "",
   ];
 

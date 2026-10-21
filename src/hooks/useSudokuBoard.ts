@@ -120,6 +120,15 @@ function isPeer(cell1: CellState, cell2: CellState): boolean {
   return false;
 }
 
+export function isPeerOfSelectedCell(
+  cell: CellState,
+  cells: CellState[],
+): boolean {
+  if (cell.selected) return false;
+
+  return cells.some((cell2) => isPeer(cell, cell2) && cell2.selected);
+}
+
 export function hasConflict(cell: CellState, cells: CellState[]): boolean {
   if (!cell.value) return false;
 
