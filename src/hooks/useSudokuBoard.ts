@@ -151,6 +151,18 @@ export function sameValueAsSelected(
   return cells.some((cell2) => cell.value === cell2.value && cell2.selected);
 }
 
+export function completedNumbers(cells: CellState[]): number[] {
+  const NUMBERS: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const completedNums = [];
+  for (let number of NUMBERS) {
+    if (cells.filter((cell) => cell.value === number).length >= 9) {
+      completedNums.push(number);
+    }
+  }
+  console.log(completedNums);
+  return completedNums;
+}
+
 function createEmptyBoard(): CellState[] {
   const cells: CellState[] = [];
   for (let row = 1; row <= 9; row++) {
