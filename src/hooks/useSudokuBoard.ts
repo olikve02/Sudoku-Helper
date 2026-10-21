@@ -154,7 +154,7 @@ export function sameValueAsSelected(
 export function completedNumbers(cells: CellState[]): number[] {
   const NUMBERS: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   const completedNums = [];
-  for (let number of NUMBERS) {
+  for (const number of NUMBERS) {
     if (cells.filter((cell) => cell.value === number).length >= 9) {
       completedNums.push(number);
     }

@@ -126,6 +126,26 @@
   outline-offset: 2px;
 }
 
+/* Ferdig tall: dempet knapp med grønn hake, uten hover- og trykkeffekt.
+   Står etter :hover og :active, så disse reglene vinner. */
+.number-button:disabled,
+.number-button:disabled:hover,
+.number-button:disabled:active {
+  background-color: #1c1d22;
+  border-color: #2f3a33;
+  color: #4ade80;
+  cursor: default;
+  transform: none;
+}
+
+/* Sentrerer haken i knappen */
+.number-button svg {
+  display: block;
+  margin: 0 auto;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
 .icon-row{
   display: flex;
   justify-content: space-between;
