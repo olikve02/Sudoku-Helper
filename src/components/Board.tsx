@@ -4,18 +4,20 @@ import type { CellState } from "../types";
 import {
   hasConflict,
   isPeerOfSelectedCell,
+  isWrong,
   sameValueAsSelected,
 } from "../hooks/useSudokuBoard";
 
 type BoardProps = {
   cells: CellState[];
   onCellClick: (row: number, col: number) => void;
+  solution: number[] | null;
 };
 
-function Board({ cells, onCellClick }: BoardProps) {
+function Board({ cells, onCellClick, solution }: BoardProps) {
   return (
     <Grid container columns={9} className="board">
-      {cells.map((cell) => (
+      {cells.map((cell, index) => (
         <Cell
           key={`${cell.row}-${cell.col}`}
           cell={cell}
@@ -23,6 +25,7 @@ function Board({ cells, onCellClick }: BoardProps) {
           onClick={() => onCellClick(cell.row, cell.col)}
           isPeer={isPeerOfSelectedCell(cell, cells)}
           sameValueAsSelected={sameValueAsSelected(cell, cells)}
+          isWrong={isWrong(cell, index, solution)}
         />
       ))}
     </Grid>

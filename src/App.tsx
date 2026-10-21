@@ -35,7 +35,11 @@ function App() {
     <Box className="screen-container">
       {screen === "board" ? (
         <div>
-          <Board cells={board.cells} onCellClick={board.selectCell} />
+          <Board
+            cells={board.cells}
+            onCellClick={board.selectCell}
+            solution={board.solution}
+          />
           <Box className="icon-row">
             <Eraser className="icon-button" onClick={board.erase} />
             <Grid2x2Check

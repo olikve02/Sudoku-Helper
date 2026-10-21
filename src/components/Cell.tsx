@@ -8,6 +8,7 @@ type CellProps = {
   hasConflict: boolean;
   isPeer: boolean;
   sameValueAsSelected: boolean;
+  isWrong: boolean;
 };
 
 function Cell({
@@ -16,6 +17,7 @@ function Cell({
   hasConflict,
   isPeer,
   sameValueAsSelected,
+  isWrong,
 }: CellProps) {
   // Tykke linjer mellom 3×3-boksene
   const classes = [
@@ -26,6 +28,7 @@ function Cell({
     isPeer ? "cell-peer" : "",
     hasConflict ? "cell-conflict" : "",
     sameValueAsSelected ? "cell-same-value" : "",
+    isWrong ? "wrong-cell" : "",
   ];
 
   return (

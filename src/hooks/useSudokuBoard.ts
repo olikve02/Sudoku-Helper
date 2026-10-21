@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { CellState } from "../types";
+import { solve } from "../sudoku/solver";
 
 /**
  * All tilstand og logikk for sudokubrettet: hvilke celler som er valgt,
@@ -10,6 +11,7 @@ export default function useSudokuBoard() {
   const [history, setHistory] = useState<CellState[][]>([]);
   const [selectMultiple, setSelectMultiple] = useState(false);
   const [candidateMode, setCandidateMode] = useState(false);
+  const [solution, setSolution] = useState<number[] | null>(null);
 
   useEffect(() => {
     localStorage.setItem("cells", JSON.stringify(cells));
@@ -74,10 +76,19 @@ export default function useSudokuBoard() {
 
   // Legger inn 81 skannede tall (0 = tom celle)
   function setScannedValues(digits: number[]) {
+    const board = [...digits];
+    if (solve(board)) {
+      setSolution(board);
+    } else {
+      setSolution(null);
+    }
+
     setCells(
       cells.map((cell, index) => ({
         ...cell,
         value: digits[index] ? digits[index] : null,
+        candidates: [],
+        selected: false,
       })),
     );
   }
@@ -111,6 +122,7 @@ export default function useSudokuBoard() {
     setScannedValues,
     erase,
     clearBoard,
+    solution,
     toggleSelectMultiple: () => setSelectMultiple(!selectMultiple),
     toggleCandidateMode: () => setCandidateMode(!candidateMode),
   };
@@ -151,6 +163,17 @@ export function hasConflict(cell: CellState, cells: CellState[]): boolean {
       (cell.col !== cell2.col || cell.row !== cell2.row),
   );
   return hasConflict;
+}
+
+export function isWrong(
+  cell: CellState,
+  index: number,
+  solution: number[] | null,
+): boolean {
+  if (!solution) return false;
+  if (!cell.value) return false;
+  if (cell.value !== solution[index]) return true;
+  return false;
 }
 
 export function sameValueAsSelected(
