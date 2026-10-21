@@ -4,7 +4,7 @@ import { Camera, Eraser, Grid2x2Check, PencilLine, Undo2 } from "lucide-react";
 import Board from "./components/Board";
 import NumberButtonRow from "./components/NumberButtonRow";
 import CameraScanner from "./components/CameraScanner";
-import useSudokuBoard from "./hooks/useSudokuBoard";
+import useSudokuBoard, { completedNumbers } from "./hooks/useSudokuBoard";
 import scanBoard from "./scanner/scanBoard";
 import LabelingTool from "./tools/labeling/LabelingTool";
 import "./App.css";
@@ -45,7 +45,10 @@ function App() {
               onClick={() => setScreen("camera")}
             />
           </Box>
-          <NumberButtonRow onNumberClick={board.enterNumber} />
+          <NumberButtonRow
+            onNumberClick={board.enterNumber}
+            completedNumbers={completedNumbers(board.cells)}
+          />
         </div>
       ) : (
         <CameraScanner
