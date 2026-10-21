@@ -51,7 +51,7 @@ function App() {
               className="icon-button"
               onClick={() => setScreen("camera")}
             />
-            <Trash></Trash>
+            <Trash className="icon-button" onClick={board.clearBoard}></Trash>
           </Box>
           <NumberButtonRow
             onNumberClick={board.enterNumber}

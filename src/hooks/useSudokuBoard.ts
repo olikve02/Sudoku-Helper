@@ -94,6 +94,13 @@ export default function useSudokuBoard() {
     setCells(newCells);
   }
 
+  function clearBoard() {
+    if (confirm("Vil du tømme brettet")) {
+      const newCells = createEmptyBoard();
+      setCells(newCells);
+    }
+  }
+
   return {
     cells,
     selectMultiple,
@@ -103,6 +110,7 @@ export default function useSudokuBoard() {
     undo,
     setScannedValues,
     erase,
+    clearBoard,
     toggleSelectMultiple: () => setSelectMultiple(!selectMultiple),
     toggleCandidateMode: () => setCandidateMode(!candidateMode),
   };
@@ -183,6 +191,8 @@ function loadBoard(): CellState[] {
     if (localCells) {
       return JSON.parse(localCells);
     }
-  } catch {}
+  } catch {
+    return createEmptyBoard();
+  }
   return createEmptyBoard();
 }
