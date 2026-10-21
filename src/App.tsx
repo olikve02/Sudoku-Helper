@@ -1,6 +1,13 @@
 import { Box } from "@mui/material";
 import { useState } from "react";
-import { Camera, Eraser, Grid2x2Check, PencilLine, Undo2 } from "lucide-react";
+import {
+  Camera,
+  Eraser,
+  Grid2x2Check,
+  PencilLine,
+  Trash,
+  Undo2,
+} from "lucide-react";
 import Board from "./components/Board";
 import NumberButtonRow from "./components/NumberButtonRow";
 import CameraScanner from "./components/CameraScanner";
@@ -44,6 +51,7 @@ function App() {
               className="icon-button"
               onClick={() => setScreen("camera")}
             />
+            <Trash className="icon-button" onClick={board.clearBoard}></Trash>
           </Box>
           <NumberButtonRow
             onNumberClick={board.enterNumber}
