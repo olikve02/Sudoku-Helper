@@ -1,7 +1,6 @@
 import { Box } from "@mui/material";
 import { useState } from "react";
 import {
-  Camera,
   Crosshair,
   Eraser,
   Grid2x2Check,
@@ -10,6 +9,7 @@ import {
   Undo2,
 } from "lucide-react";
 import Board from "./components/Board";
+import NewGameMenu from "./components/NewGameMenu";
 import NumberButtonRow from "./components/NumberButtonRow";
 import CameraScanner from "./components/CameraScanner";
 import useSudokuBoard, { completedNumbers } from "./hooks/useSudokuBoard";
@@ -64,9 +64,9 @@ function App() {
             completedNumbers={completedNumbers(board.cells)}
           />
           <Box className="camera-icon-container">
-            <Camera
-              className="icon-button"
-              onClick={() => setScreen("camera")}
+            <NewGameMenu
+              onNewGame={board.newGame}
+              onScan={() => setScreen("camera")}
             />
           </Box>
         </div>

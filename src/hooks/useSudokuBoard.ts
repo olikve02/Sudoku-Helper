@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { CellState } from "../types";
 import { solve } from "../sudoku/solver";
+import { generate } from "../sudoku/generator";
 
 /**
  * All tilstand og logikk for sudokubrettet: hvilke celler som er valgt,
@@ -122,6 +123,25 @@ export default function useSudokuBoard() {
     setShowAllPeers(!showAllPeers);
   }
 
+  function newGame(difficulty: number) {
+    const { puzzle, solution } = generate(difficulty);
+    setCells(
+      cells.map((cell, index) => {
+        if (puzzle[index] > 0) {
+          return {
+            ...cell,
+            value: puzzle[index],
+            selected: false,
+            candidates: [],
+          };
+        }
+        return { ...cell, value: null, candidates: [], selected: false };
+      }),
+    );
+    setHistory([]);
+    setSolution(solution);
+  }
+
   return {
     cells,
     selectMultiple,
@@ -135,6 +155,7 @@ export default function useSudokuBoard() {
     solution,
     showAllPeers,
     toggleShowAllPeers,
+    newGame,
     toggleSelectMultiple: () => setSelectMultiple(!selectMultiple),
     toggleCandidateMode: () => setCandidateMode(!candidateMode),
   };
@@ -219,7 +240,6 @@ export function completedNumbers(cells: CellState[]): number[] {
       completedNums.push(number);
     }
   }
-  console.log(completedNums);
   return completedNums;
 }
 

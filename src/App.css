@@ -165,6 +165,39 @@
   padding-top: 20px;
 }
 
+/* "Nytt brett"-knappen: samme stil som tallknappene */
+.new-game-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 18px;
+
+  border: 1px solid #4b5563;
+  border-radius: 9px;
+  background-color: #25262c;
+  color: #f3f4f6;
+
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.new-game-button:hover {
+  background-color: #353640;
+  border-color: #818cf8;
+}
+
+.new-game-button:focus-visible {
+  outline: 2px solid #a78bfa;
+  outline-offset: 2px;
+}
+
 .border-top-thick {
   border-top-width: 3px;
 }
