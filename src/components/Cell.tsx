@@ -28,7 +28,7 @@ function Cell({
     isPeer ? "cell-peer" : "",
     hasConflict ? "cell-conflict" : "",
     sameValueAsSelected ? "cell-same-value" : "",
-    isWrong ? "wrong-cell" : "",
+    isWrong ? "cell-conflict" : "",
   ];
 
   return (
