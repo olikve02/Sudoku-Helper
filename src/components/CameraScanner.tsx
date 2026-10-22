@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import { Camera, Flashlight, FlashlightOff, Undo2 } from "lucide-react";
+import { ArrowLeft, Flashlight, FlashlightOff, LoaderCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import "./CameraScanner.css";
 
@@ -21,6 +21,8 @@ function CameraScanner({ onCapture, onBack }: CameraScannerProps) {
   const guideBoxRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [flashOn, setFlashOn] = useState(false);
+  const [torchSupported, setTorchSupported] = useState(false);
+  const [scanning, setScanning] = useState(false);
 
   // Start bakkameraet når skjermen vises, og stopp det når den lukkes
   useEffect(() => {
@@ -51,6 +53,7 @@ function CameraScanner({ onCapture, onBack }: CameraScannerProps) {
           if (capabilities.torch) {
             await track.applyConstraints(torchConstraint(false));
             setFlashOn(false);
+            setTorchSupported(true);
           }
         } catch (error) {
           console.error("Kunne ikke slå av lommelykta:", error);
@@ -71,47 +74,69 @@ function CameraScanner({ onCapture, onBack }: CameraScannerProps) {
     <Box className="camera-screen">
       <Box className="camera-view">
         <video ref={videoRef} autoPlay playsInline muted />
-        <Box ref={guideBoxRef} className="guide-box" />
+
+        {/* Søkeramme med hjørner. Området utenfor blir mørkere */}
+        <Box ref={guideBoxRef} className="guide-box">
+          <span className="corner top-left" />
+          <span className="corner top-right" />
+          <span className="corner bottom-left" />
+          <span className="corner bottom-right" />
+        </Box>
+
+        {scanning && (
+          <Box className="scanning-overlay">
+            <LoaderCircle className="spinner" size={36} />
+            Leser brettet…
+          </Box>
+        )}
       </Box>
 
-      <Box className="camera-button-row">
-        <Undo2 onClick={onBack} size={40} className="icon-buton" />
-        <Camera
-          size={40}
-          className="icon-button"
-          onClick={async () => {
-            if (videoRef.current && guideBoxRef.current) {
-              await onCapture(videoRef.current, guideBoxRef.current);
-            }
-          }}
+      <p className="camera-hint">Hold sudokubrettet innenfor rammen</p>
+
+      <Box className="camera-controls">
+        <button className="camera-round-button" onClick={onBack} aria-label="Tilbake">
+          <ArrowLeft size={24} />
+        </button>
+
+        <button
+          className="shutter-button"
+          onClick={capture}
+          disabled={scanning}
+          aria-label="Ta bilde"
         />
-        {flashOn ? (
-          <Flashlight
-            size={40}
-            className="icon-button flash-icon"
+
+        {/* Lommelykt bare på telefoner som støtter det. Tom plass ellers,
+            så utløserknappen holder seg i midten */}
+        {torchSupported ? (
+          <button
+            className={`camera-round-button ${flashOn ? "active" : ""}`}
             onClick={toggleFlash}
-          />
+            aria-label={flashOn ? "Slå av lommelykt" : "Slå på lommelykt"}
+          >
+            {flashOn ? <Flashlight size={24} /> : <FlashlightOff size={24} />}
+          </button>
         ) : (
-          <FlashlightOff
-            size={40}
-            className="icon-button flash-icon"
-            onClick={toggleFlash}
-          />
+          <span className="camera-round-placeholder" />
         )}
       </Box>
     </Box>
   );
 
+  async function capture() {
+    if (!videoRef.current || !guideBoxRef.current) return;
+
+    setScanning(true);
+    try {
+      await onCapture(videoRef.current, guideBoxRef.current);
+    } finally {
+      setScanning(false);
+    }
+  }
+
   async function toggleFlash() {
     const stream = videoRef.current?.srcObject as MediaStream | null;
     const track = stream?.getVideoTracks()[0];
     if (!track) return;
-
-    const capabilities = track.getCapabilities() as TorchCapabilities;
-    if (!capabilities.torch) {
-      console.log("Lommelykt støttes ikke på denne enheten.");
-      return;
-    }
 
     try {
       await track.applyConstraints(torchConstraint(!flashOn));
