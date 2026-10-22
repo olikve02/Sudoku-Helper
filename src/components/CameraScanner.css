@@ -1,51 +1,207 @@
-.camera-screen{
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    position: relative;
+.camera-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: var(--board-size);
 }
 
-.camera-button-row{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    
-    width: 100%;
-    height: 40px;
-}
-
+/* Rammen rundt videoen. Den er nøyaktig like stor som videoen, så guideboksen
+   kan plasseres i prosent av videoen (scanBoard regner ut utsnittet ut fra dette) */
 .camera-view {
   position: relative;
-  width: 100%;
+  display: inline-block;
+  line-height: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  background-color: #000;
 }
 
+/* Videoen beholder sitt eget format (ingen strekking eller beskjæring), men
+   blir aldri bredere enn skjermen eller så høy at knappene havner utenfor */
 .camera-view video {
   display: block;
-  width: 100%;
+  width: auto;
   height: auto;
+  max-width: 100%;
+  max-height: calc(100svh - 200px);
 }
 
 .guide-box {
   position: absolute;
   width: 80%;
-  max-width: 500px;
   aspect-ratio: 1 / 1;
-  border: 3px solid lime;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 1;
   box-sizing: border-box;
+  border-radius: 12px;
+  /* Gjør alt utenfor rammen mørkere, så det er tydelig hvor brettet skal være */
+  box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.45);
 }
 
-/* Smaller guide box on PC */
+/* Mindre guideboks på PC, der kameraet er liggende */
 @media (min-width: 768px) {
   .guide-box {
     width: 45%;
-    max-width: 400px;
   }
 }
 
+/* Hjørnene i søkerammen */
+.corner {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border: 0 solid #a78bfa;
+}
 
+.corner.top-left {
+  top: 0;
+  left: 0;
+  border-top-width: 4px;
+  border-left-width: 4px;
+  border-top-left-radius: 12px;
+}
 
+.corner.top-right {
+  top: 0;
+  right: 0;
+  border-top-width: 4px;
+  border-right-width: 4px;
+  border-top-right-radius: 12px;
+}
+
+.corner.bottom-left {
+  bottom: 0;
+  left: 0;
+  border-bottom-width: 4px;
+  border-left-width: 4px;
+  border-bottom-left-radius: 12px;
+}
+
+.corner.bottom-right {
+  bottom: 0;
+  right: 0;
+  border-bottom-width: 4px;
+  border-right-width: 4px;
+  border-bottom-right-radius: 12px;
+}
+
+/* Vises mens bildet leses */
+.scanning-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background-color: rgba(22, 23, 29, 0.7);
+  color: #f3f4f6;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.spinner {
+  color: #a78bfa;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.camera-hint {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #9ca3af;
+  text-align: center;
+}
+
+/* Knapperad: tilbake – utløser – lommelykt */
+.camera-controls {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  justify-items: center;
+  width: 100%;
+  max-width: 360px;
+}
+
+.camera-round-button,
+.camera-round-placeholder {
+  width: 52px;
+  height: 52px;
+}
+
+.camera-round-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #4b5563;
+  border-radius: 50%;
+  background-color: #25262c;
+  color: #e5e7eb;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.camera-round-button:hover {
+  background-color: #353640;
+  border-color: #818cf8;
+}
+
+/* Lommelykt på */
+.camera-round-button.active {
+  background-color: #facc15;
+  border-color: #facc15;
+  color: #1c1d22;
+}
+
+/* Stor rund utløserknapp, som i kamera-appen */
+.shutter-button {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 4px solid #f3f4f6;
+  background-color: #f3f4f6;
+  box-shadow: inset 0 0 0 4px #16171d;
+  cursor: pointer;
+  transition:
+    transform 0.1s ease,
+    background-color 0.15s ease;
+}
+
+.shutter-button:hover {
+  background-color: #c4b5fd;
+}
+
+.shutter-button:active {
+  transform: scale(0.92);
+}
+
+.shutter-button:disabled {
+  background-color: #6b7280;
+  cursor: default;
+  transform: none;
+}
+
+.camera-round-button:focus-visible,
+.shutter-button:focus-visible {
+  outline: 2px solid #a78bfa;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 2.5s;
+  }
+}
