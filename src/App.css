@@ -1,7 +1,16 @@
+/* Farger for linjene på brettet */
+:root {
+  --line: #34353f;
+  --line-thick: #6b7280;
+}
+
 .sudoku-cell {
   position: relative;
   box-sizing: border-box;
-  border: 1px solid;
+  /* 0,5 px på hver side blir 1 px mellom to celler */
+  border: 0.5px solid var(--line);
+  color: #e5e7eb;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -53,8 +62,8 @@
 
 
 .cell-selected {
-  box-shadow: inset 0 0 0 2px #51418a;
-  background-color: #1b1924;
+  box-shadow: inset 0 0 0 2px #8b7cf6;
+  background-color: rgba(139, 124, 246, 0.22);
   transition:
     background-color 0.15s ease,
     box-shadow 0.15s ease;
@@ -62,8 +71,8 @@
 
 .screen-container {
   /* Brettet er så stort som mulig: hele bredden (minus en liten marg), men aldri
-     så høyt at knappene under havner utenfor skjermen, og aldri over 680 px */
-  --board-size: min(100vw - 12px, 100svh - 190px, 680px);
+     så høyt at topplinja og knappene havner utenfor skjermen, og aldri over 680 px */
+  --board-size: min(100vw - 12px, 100svh - 260px, 680px);
 
   display: flex;
   flex-direction: column;
@@ -72,38 +81,124 @@
   gap: 12px;
   min-height: 100svh;
   box-sizing: border-box;
-  padding: 16px 6px;
+  padding: 12px 6px;
+}
+
+/* Hovedskjermen: topplinje, brett, verktøy og tallknapper under hverandre */
+.board-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.app-header {
+  width: var(--board-size);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #f3f4f6;
+}
+
+.app-title span {
+  color: #a78bfa;
 }
 
 .board {
   width: var(--board-size);
   height: auto;
   aspect-ratio: 1 / 1;
+  box-sizing: border-box;
+  border: 2px solid var(--line-thick);
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #1b1c22;
   /* Lar tall og kandidater skaleres etter brettets størrelse (cqw) */
   container-type: inline-size;
+}
+
+/* Verktøyknapper: ikon med tekst under */
+.toolbar {
+  width: var(--board-size);
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.tool-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 8px 0 6px;
+
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #9ca3af;
+
+  font: inherit;
+  font-size: 0.72rem;
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.tool-button span {
+  white-space: nowrap;
+}
+
+.tool-button:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #e5e7eb;
+}
+
+.tool-button:active {
+  transform: scale(0.95);
+}
+
+/* Av/på-verktøy som er på */
+.tool-button.active {
+  background-color: rgba(167, 139, 250, 0.14);
+  color: #c4b5fd;
+}
+
+.tool-button:focus-visible {
+  outline: 2px solid #a78bfa;
+  outline-offset: 2px;
 }
 
 .button-row {
   width: var(--board-size);
   display: grid;
   grid-template-columns: repeat(9, minmax(0, 1fr));
-  gap: 2px;
-  padding-top: 20px;
+  gap: 4px;
 }
 
 /* Number buttons */
 .number-button {
   flex: 1;
   min-width: 0;
-  height: 52px;
+  height: 56px;
 
-  border: 1px solid #4b5563;
-  border-radius: 9px;
+  border: 1px solid #3a3b45;
+  border-radius: 10px;
 
   background-color: #25262c;
   color: #f3f4f6;
 
-  font-size: 1rem;
+  font: inherit;
+  font-size: 1.4rem;
   font-weight: 500;
 
   cursor: pointer;
@@ -132,6 +227,13 @@
   outline-offset: 2px;
 }
 
+/* Notatmodus: mindre, lilla tall, så det er tydelig at det blir kandidater */
+.candidate-mode .number-button {
+  color: #c4b5fd;
+  font-size: 1.05rem;
+  border-color: rgba(167, 139, 250, 0.35);
+}
+
 /* Ferdig tall: dempet knapp med grønn hake, uten hover- og trykkeffekt.
    Står etter :hover og :active, så disse reglene vinner. */
 .number-button:disabled,
@@ -152,26 +254,13 @@
   height: 1.1rem;
 }
 
-.icon-row{
-  display: flex;
-  justify-content: space-between;
-  width: var(--board-size);
-  padding-top: 20px;
-}
-
-.camera-icon-container{
-  display: flex;
-  justify-content: center;
-  padding-top: 20px;
-}
-
-/* "Nytt brett"-knappen: samme stil som tallknappene */
+/* "Nytt brett"-knappen i topplinja */
 .new-game-button {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  height: 44px;
-  padding: 0 18px;
+  gap: 6px;
+  height: 38px;
+  padding: 0 12px;
 
   border: 1px solid #4b5563;
   border-radius: 9px;
@@ -198,12 +287,13 @@
   outline-offset: 2px;
 }
 
+/* Tykke linjer mellom 3×3-boksene */
 .border-top-thick {
-  border-top-width: 3px;
+  border-top: 2px solid var(--line-thick);
 }
 
 .border-left-thick {
-  border-left-width: 3px;
+  border-left: 2px solid var(--line-thick);
 }
 
 .sudoku-candidates {
@@ -224,30 +314,9 @@
   /* 1cqw = 1 % av brettets bredde */
   font-size: 2.6cqw;
   line-height: 1;
+  color: #9ca3af;
 }
 
 .sudoku-value {
   font-size: 6.5cqw;
-}
-
-/* Normal icon */
-.icon-button {
-  color: #9ca3af;
-  background: transparent;
-  transition: color 0.2s ease;
-}
-
-/* Active icon */
-.icon-button.selected {
-  color: #a78bfa;
-  background: transparent;
-}
-
-/* Hover */
-.icon-button:hover {
-  color: #e5e7eb;
-}
-
-.icon-button.selected:hover {
-  color: #c4b5fd;
 }

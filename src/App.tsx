@@ -12,6 +12,7 @@ import Board from "./components/Board";
 import NewGameMenu from "./components/NewGameMenu";
 import NumberButtonRow from "./components/NumberButtonRow";
 import CameraScanner from "./components/CameraScanner";
+import ToolButton from "./components/ToolButton";
 import useSudokuBoard, { completedNumbers } from "./hooks/useSudokuBoard";
 import scanBoard from "./scanner/scanBoard";
 import LabelingTool from "./tools/labeling/LabelingTool";
@@ -35,41 +36,54 @@ function App() {
   return (
     <Box className="screen-container">
       {screen === "board" ? (
-        <div>
+        <Box className="board-screen">
+          <header className="app-header">
+            <h1 className="app-title">
+              Sudoku <span>Helper</span>
+            </h1>
+            <NewGameMenu
+              onNewGame={board.newGame}
+              onScan={() => setScreen("camera")}
+            />
+          </header>
+
           <Board
             cells={board.cells}
             onCellClick={board.selectCell}
             solution={board.solution}
             showAllPeers={board.showAllPeers}
           />
-          <Box className="icon-row">
-            <Eraser className="icon-button" onClick={board.erase} />
-            <Crosshair
-              onClick={board.toggleShowAllPeers}
-              className={`icon-button ${board.showAllPeers ? "selected" : ""}`}
-            ></Crosshair>
-            <Grid2x2Check
-              className={`icon-button ${board.selectMultiple ? "selected" : ""}`}
-              onClick={board.toggleSelectMultiple}
-            />
-            <Undo2 className="icon-button" onClick={board.undo} />
-            <PencilLine
-              className={`icon-button ${board.candidateMode ? "selected" : ""}`}
+
+          <Box className="toolbar">
+            <ToolButton icon={Undo2} label="Angre" onClick={board.undo} />
+            <ToolButton icon={Eraser} label="Visk ut" onClick={board.erase} />
+            <ToolButton
+              icon={PencilLine}
+              label="Notater"
               onClick={board.toggleCandidateMode}
+              active={board.candidateMode}
             />
-            <Trash className="icon-button" onClick={board.clearBoard}></Trash>
+            <ToolButton
+              icon={Grid2x2Check}
+              label="Flervalg"
+              onClick={board.toggleSelectMultiple}
+              active={board.selectMultiple}
+            />
+            <ToolButton
+              icon={Crosshair}
+              label="Naboer"
+              onClick={board.toggleShowAllPeers}
+              active={board.showAllPeers}
+            />
+            <ToolButton icon={Trash} label="Tøm" onClick={board.clearBoard} />
           </Box>
+
           <NumberButtonRow
             onNumberClick={board.enterNumber}
             completedNumbers={completedNumbers(board.cells)}
+            candidateMode={board.candidateMode}
           />
-          <Box className="camera-icon-container">
-            <NewGameMenu
-              onNewGame={board.newGame}
-              onScan={() => setScreen("camera")}
-            />
-          </Box>
-        </div>
+        </Box>
       ) : (
         <CameraScanner
           onCapture={handleCapture}
@@ -88,9 +102,7 @@ function App() {
       board.setScannedValues(digits);
       setScreen("board");
     } else {
-      alert(
-        "Fant ikke brettet. Hold det innenfor den grønne boksen og prøv igjen",
-      );
+      alert("Fant ikke brettet. Hold det innenfor rammen og prøv igjen");
     }
   }
 }
