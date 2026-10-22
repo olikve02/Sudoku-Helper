@@ -51,9 +51,9 @@ function NewGameMenu({ onNewGame, onScan }: NewGameMenuProps) {
         anchorEl={anchor}
         open={anchor !== null}
         onClose={() => setAnchor(null)}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        transformOrigin={{ vertical: "bottom", horizontal: "center" }}
-        slotProps={{ paper: { sx: paperStyle } }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
+        slotProps={{ paper: { sx: { ...paperStyle, marginTop: "6px" } } }}
       >
         {DIFFICULTIES.map(({ label, givens }) => (
           <MenuItem key={label} onClick={() => choose(() => onNewGame(givens))}>

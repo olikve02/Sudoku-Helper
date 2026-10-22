@@ -1,10 +1,11 @@
+/* Appen er laget for mørk bakgrunn, så den er alltid mørk (også i lys modus) */
 :root {
-  --text: #6b6375;
-  --bg: #fff;
+  --text: #9ca3af;
+  --bg: #16171d;
 
   font: 18px/145% system-ui, "Segoe UI", Roboto, sans-serif;
   letter-spacing: 0.18px;
-  color-scheme: light dark;
+  color-scheme: dark;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
@@ -14,13 +15,6 @@
 
   @media (max-width: 1024px) {
     font-size: 16px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --bg: #16171d;
   }
 }
 
