@@ -159,6 +159,12 @@
   padding-top: 20px;
 }
 
+.camera-icon-container{
+  display: flex;
+  justify-content: center;
+  padding-top: 20px;
+}
+
 .border-top-thick {
   border-top-width: 3px;
 }

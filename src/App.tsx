@@ -57,16 +57,18 @@ function App() {
               className={`icon-button ${board.candidateMode ? "selected" : ""}`}
               onClick={board.toggleCandidateMode}
             />
-            <Camera
-              className="icon-button"
-              onClick={() => setScreen("camera")}
-            />
             <Trash className="icon-button" onClick={board.clearBoard}></Trash>
           </Box>
           <NumberButtonRow
             onNumberClick={board.enterNumber}
             completedNumbers={completedNumbers(board.cells)}
           />
+          <Box className="camera-icon-container">
+            <Camera
+              className="icon-button"
+              onClick={() => setScreen("camera")}
+            />
+          </Box>
         </div>
       ) : (
         <CameraScanner
