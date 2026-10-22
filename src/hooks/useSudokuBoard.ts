@@ -27,6 +27,9 @@ export default function useSudokuBoard() {
         if (selectMultiple) {
           return isClicked ? { ...cell, selected: !cell.selected } : cell;
         }
+        if (cell.selected) {
+          return { ...cell, selected: false };
+        }
         return { ...cell, selected: isClicked };
       }),
     );
