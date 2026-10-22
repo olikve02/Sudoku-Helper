@@ -2,6 +2,7 @@ import { Box } from "@mui/material";
 import { useState } from "react";
 import {
   Camera,
+  Crosshair,
   Eraser,
   Grid2x2Check,
   PencilLine,
@@ -39,9 +40,14 @@ function App() {
             cells={board.cells}
             onCellClick={board.selectCell}
             solution={board.solution}
+            showAllPeers={board.showAllPeers}
           />
           <Box className="icon-row">
             <Eraser className="icon-button" onClick={board.erase} />
+            <Crosshair
+              onClick={board.toggleShowAllPeers}
+              className={`icon-button ${board.showAllPeers ? "selected" : ""}`}
+            ></Crosshair>
             <Grid2x2Check
               className={`icon-button ${board.selectMultiple ? "selected" : ""}`}
               onClick={board.toggleSelectMultiple}

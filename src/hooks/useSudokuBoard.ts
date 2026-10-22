@@ -12,6 +12,7 @@ export default function useSudokuBoard() {
   const [selectMultiple, setSelectMultiple] = useState(false);
   const [candidateMode, setCandidateMode] = useState(false);
   const [solution, setSolution] = useState<number[] | null>(loadSolution);
+  const [showAllPeers, setShowAllPeers] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("cells", JSON.stringify(cells));
@@ -114,6 +115,10 @@ export default function useSudokuBoard() {
     }
   }
 
+  function toggleShowAllPeers() {
+    setShowAllPeers(!showAllPeers);
+  }
+
   return {
     cells,
     selectMultiple,
@@ -125,6 +130,8 @@ export default function useSudokuBoard() {
     erase,
     clearBoard,
     solution,
+    showAllPeers,
+    toggleShowAllPeers,
     toggleSelectMultiple: () => setSelectMultiple(!selectMultiple),
     toggleCandidateMode: () => setCandidateMode(!candidateMode),
   };
@@ -153,6 +160,19 @@ export function isPeerOfSelectedCell(
   if (cell.selected) return false;
 
   return cells.some((cell2) => isPeer(cell, cell2) && cell2.selected);
+}
+
+export function isPeerOfSameValueAsSelected(
+  cell: CellState,
+  cells: CellState[],
+): boolean {
+  const selectedCell = cells.find((restCell) => restCell.selected === true);
+
+  if (!selectedCell) return false;
+  if (!selectedCell.value) return false;
+  return cells.some(
+    (cell2) => isPeer(cell, cell2) && cell2.value == selectedCell.value,
+  );
 }
 
 export function hasConflict(cell: CellState, cells: CellState[]): boolean {
