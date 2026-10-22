@@ -16,7 +16,11 @@ export function solve(board: number[]): boolean {
   return false;
 }
 
-function isValid(board: number[], index: number, number: number): boolean {
+export function isValid(
+  board: number[],
+  index: number,
+  number: number,
+): boolean {
   for (let i = 0; i < board.length; i++) {
     if (isPeerIndex(index, i) && board[i] === number && i !== index) {
       return false;
