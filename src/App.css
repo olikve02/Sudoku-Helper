@@ -123,6 +123,20 @@
   color: #a78bfa;
 }
 
+/* Tiden i topplinja: liten "pille" mellom tittelen og "Nytt brett" */
+.timer {
+  padding: 4px 12px;
+  border: 1px solid #3a3b45;
+  border-radius: 999px;
+  background-color: #25262c;
+  color: #e5e7eb;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  /* Alle sifre like brede, så teksten ikke hopper når tiden endres */
+  font-variant-numeric: tabular-nums;
+}
+
 .board {
   width: var(--board-size);
   height: auto;
