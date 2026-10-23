@@ -2,8 +2,9 @@
 Trener modellen som gjenkjenner sifrene 1–9 i sudokuceller.
 
 Bildene leses fra ml/data/1 … ml/data/9 (28×28, hvitt siffer på svart bunn,
-laget med merkeverktøyet i appen). Den ferdige modellen lagres til
-ml/digit-model.keras.
+laget med merkeverktøyet i appen). Under treningen forskyves, roteres og
+zoomes bildene litt tilfeldig (data augmentation), så modellen tåler ekte
+kamerabilder bedre. Den ferdige modellen lagres til ml/digit-model.keras.
 
 Bruk:
     python ml/train.py                  # tren og lagre
@@ -19,6 +20,7 @@ from pathlib import Path
 import keras
 import matplotlib.pyplot as plt
 import numpy as np
+import tensorflow as tf
 
 ML_DIR = Path(__file__).parent
 DATA_DIR = ML_DIR / "data"
@@ -26,11 +28,14 @@ MODEL_PATH = ML_DIR / "digit-model.keras"
 
 # Delingen skjer per ark, så celler fra samme brett ikke havner i flere deler.
 # Ark som er samme brett fotografert flere ganger (1/7, 2/4, 3/26, 5/6) holdes sammen.
-TEST_SHEETS = [3, 20, 24, 26]
+# Ark 32 og 33 er brett der den gamle modellen leste håndskrevne 1-ere som 7
+TEST_SHEETS = [3, 20, 24, 26, 32, 33]
 VALIDATION_SHEETS = [5, 6, 21, 22]
 
 # Antall håndskrevne MNIST-sifre som blandes inn i treningen (0 = bare egne bilder)
 MNIST_COUNT = 10000
+
+BATCH_SIZE = 32
 
 
 def load_data():
@@ -80,6 +85,35 @@ def split_by_sheet(sheets):
     validation = np.isin(sheets, VALIDATION_SHEETS)
     training = ~test & ~validation
     return training, validation, test
+
+
+def build_augmentation():
+    """
+    Små tilfeldige endringer av treningsbildene (data augmentation), så modellen
+    tåler at sifrene ikke står helt likt i cella når bildet tas med kamera.
+    Uten dette ble en 1 som var forskjøvet 2–3 piksler gjettet som 7 i 17 % av tilfellene.
+    Brukes bare under treningen, og er ikke en del av modellen som eksporteres.
+    """
+    return keras.Sequential([
+        keras.layers.RandomTranslation(0.1, 0.1, fill_mode="constant"),  # ±10 % (ca. 3 px)
+        keras.layers.RandomRotation(8 / 360, fill_mode="constant"),  # ±8°
+        keras.layers.RandomZoom((-0.1, 0.1), fill_mode="constant"),  # ±10 %
+    ])
+
+
+def augmented_dataset(images, labels):
+    """Lager et datasett som stokkes og får nye tilfeldige endringer hver epoch."""
+    augmentation = build_augmentation()
+    return (
+        tf.data.Dataset.from_tensor_slices((images.astype("float32"), labels))
+        .shuffle(len(images))
+        .batch(BATCH_SIZE)
+        .map(
+            lambda batch, batch_labels: (augmentation(batch, training=True), batch_labels),
+            num_parallel_calls=tf.data.AUTOTUNE,
+        )
+        .prefetch(tf.data.AUTOTUNE)
+    )
 
 
 def build_model():
@@ -146,13 +180,13 @@ def main():
     model = build_model()
     model.summary()
 
-    # Stopper når val_loss ikke har blitt bedre på 5 epochs, og går tilbake til den beste
+    # Stopper når val_loss ikke har blitt bedre på 8 epochs, og går tilbake til den beste.
+    # Litt mer tålmodighet enn uten augmentation, siden kurven blir mer ujevn
     early_stopping = keras.callbacks.EarlyStopping(
-        monitor="val_loss", patience=5, restore_best_weights=True
+        monitor="val_loss", patience=8, restore_best_weights=True
     )
     history = model.fit(
-        training_images,
-        training_labels,
+        augmented_dataset(training_images, training_labels),
         epochs=100,
         validation_data=(images[validation], labels[validation]),
         callbacks=[early_stopping],

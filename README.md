@@ -161,6 +161,8 @@ python ml/train.py
 
 Scriptet laster bildene, deler dem i trening, validering og test **per ark** (så bilder fra samme brett ikke havner i flere deler), trener et lite CNN med Early Stopping, skriver ut resultatet på testsettet og lagrer modellen til `ml/digit-model.keras`.
 
+Under treningen får bildene små tilfeldige endringer hver epoch (*data augmentation*): forskyvning ±10 %, rotasjon ±8° og zoom ±10 %. Da tåler modellen at sifrene ikke står helt likt i cella på ekte kamerabilder. Uten dette ble en 1 som var forskjøvet 2–3 piksler gjettet som 7 i 17 % av tilfellene. Med augmentation er det under 2 %. Endringene brukes bare under treningen og er ikke en del av modellen som eksporteres.
+
 I tillegg til dine egne bilder blandes et utvalg håndskrevne sifre fra [MNIST](https://en.wikipedia.org/wiki/MNIST_database) inn i treningen (lastes ned automatisk første gang). Det går fordi appen behandler cellene til samme format som MNIST. Validering og test bruker bare egne brett. Antallet styres med `--mnist`, og `--mnist 0` trener bare på egne bilder.
 
 Legg til `--plot` for å se læringskurven, eller `--show-mistakes` for å se valideringsbildene modellen tar feil på. Det siste er nyttig for å finne feilmerkede bilder. Hvilke ark som brukes til validering og test står øverst i `train.py`.
