@@ -95,6 +95,7 @@ export default function useSudokuBoard() {
         value: digits[index] ? digits[index] : null,
         candidates: [],
         selected: false,
+        locked: cell.value ? true : false,
       })),
     );
   }
