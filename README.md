@@ -1,6 +1,6 @@
 # Sudoku Helper
 
-En webapp for sudoku der du kan ta bilde av et fysisk sudokubrett. Appen finner brettet i bildet, gjenkjenner tallene (både trykte og håndskrevne) og legger dem inn på et virtuelt brett, der du kan fortsette å løse og notere kandidater.
+En webapp for sudoku der du kan ta bilde av et fysisk sudokubrett. Appen finner brettet i bildet, gjenkjenner tallene (både trykte og håndskrevne) og legger dem inn på et virtuelt brett, der du kan fortsette å løse og notere kandidater. Du kan også lage nye brett med valgfri vanskelighetsgrad.
 
 Appen er en PWA, så den kan installeres på telefonen og virker uten nett, også scanningen.
 
@@ -10,19 +10,27 @@ Bygget med React, TypeScript og Vite. Bildebehandlingen gjøres med OpenCV, og t
 
 ## Funksjoner
 
+### Nytt brett
+
+- **Generer et brett** med vanskelighetsgrad: lett (40 tall), middels (32) eller vanskelig (26). Alle brett har nøyaktig én løsning
+- **Scan et brett** fra papir med kameraet
+- Begge velges fra "Nytt brett"-menyen øverst til høyre
+
 ### Brettet
 
-- Virtuelt sudokubrett med tall og kandidater
-- Velg én eller flere celler, visk ut og angre
+- Virtuelt sudokubrett med tall og kandidater (notatmodus)
+- Velg én eller flere celler, visk ut, angre og tøm brettet
 - Når du setter et tall, fjernes det automatisk fra kandidatene i samme rad, kolonne og boks
-- Konflikter (samme tall i rad, kolonne eller boks) markeres med rød tekst og en kort risting
+- **Feil tall** (som ikke stemmer med løsningen) og **konflikter** (samme tall i rad, kolonne eller boks) markeres med rød tekst og en kort risting
 - Rad, kolonne og boks til den valgte cella markeres
 - Alle celler med samme tall som den valgte cella markeres
+- **Naboer for alle med samme tall** (av/på): markerer rad, kolonne og boks for alle cellene med det valgte tallet, så de umarkerte cellene er de eneste stedene tallet kan stå
 - Tallknapper får en hake og deaktiveres når alle ni av et tall er plassert
+- Brettet og løsningen lagres i nettleseren (`localStorage`), så ingenting forsvinner når appen lukkes
 
 ### Kamera
 
-- Ta bilde av et sudokubrett med kameraet, med lommelykt på telefoner som støtter det
+- Søkeramme som viser hvor brettet skal være, med lommelykt på telefoner som støtter det
 - Automatisk gjenkjenning av tallene fra bildet
 - Eget verktøy for å merke treningsdata (se [Trene modellen](#trene-modellen))
 
@@ -53,6 +61,7 @@ Appen kjører da på http://localhost:5173.
 | `npm run build` | Typesjekker og bygger appen til `dist/` |
 | `npm run preview` | Viser den bygde appen lokalt (med service worker, så PWA-en kan testes) |
 | `npm run lint` | Kjører ESLint |
+| `npm run generate-icons` | Lager app-ikonene i `public/` på nytt fra `public/favicon.svg` |
 
 ### Teste på mobil
 
@@ -82,11 +91,29 @@ PWA-oppsettet ligger i `vite.config.ts` og lages av [`vite-plugin-pwa`](https://
 - **`maximumFileSizeToCacheInBytes`** er satt til 20 MB, fordi OpenCV gjør JavaScript-filen ca. 17 MB (standardgrensen er 2 MB)
 - **`globPatterns`** tar med `json` og `bin`, så ML-modellen lagres og scanning virker offline
 
-Ikonene i `public/` er laget fra `favicon.svg` med:
+### App-ikonet
+
+Ikonet er tegnet i `public/favicon.svg`. PNG-ikonene for Android, iPhone og PWA-manifestet lages ut fra den med [`@vite-pwa/assets-generator`](https://vite-pwa-org.netlify.app/assets-generator/):
 
 ```bash
-npx @vite-pwa/assets-generator --preset minimal-2023 public/favicon.svg
+npm run generate-icons
 ```
+
+Innstillingene ligger i `pwa-assets.config.ts`. Der får Android- og iPhone-ikonene mørk bakgrunn i stedet for hvit. Endrer du ikonet, må appen ofte fjernes fra startskjermen og legges til på nytt før det nye ikonet vises.
+
+## Sudoku-logikk
+
+Løseren og generatoren ligger i `src/sudoku/` og jobber på en enkel liste med 81 tall (rad for rad, `0` = tom), ikke på `CellState`.
+
+- **`solver.ts`**: `solve` løser et brett med *backtracking*: finn første tomme celle, prøv tallene 1–9 som er lov (`isValid`), løs resten rekursivt, og gå tilbake hvis det ender i en blindvei. `solve` fyller inn løsningen i lista den får, og returnerer om det gikk
+- **`generator.ts`**: `generate(givens)` lager et nytt brett:
+  1. `fillRandom` fyller et tomt brett med en løser som prøver tallene i tilfeldig rekkefølge
+  2. Tall fjernes i tilfeldig rekkefølge. Etter hver fjerning sjekker `countSolutions` at brettet fortsatt har nøyaktig én løsning (den stopper ved 2). Hvis ikke, settes tallet tilbake
+  3. Når det står `givens` tall igjen, returneres både oppgaven og det fulle brettet (løsningen)
+
+Vanskelighetsgraden styres foreløpig bare av hvor mange tall som står igjen. Under ca. 24 tall kommer ikke generatoren alltid ned, fordi alle tallene som er igjen er nødvendige.
+
+Løsningen brukes til å markere feil tall. For scannede brett regnes den ut med `solve` rett etter scanningen.
 
 ## Slik gjenkjennes tallene
 
@@ -152,15 +179,19 @@ Eksportscriptet skriver modellen i TensorFlow.js-format uten `tensorflowjs`-pakk
 src/
   App.tsx                    Velger hvilken skjerm som vises
   types.ts                   Felles typer (CellState)
-  components/                Brett, celler, knapper og kamera
-  hooks/useSudokuBoard.ts    Tilstand og logikk for brettet (valg, tall, kandidater, angre),
-                             og hjelpefunksjoner for naboer, konflikter og ferdige tall
+  components/                Brett, celler, knapper, "Nytt brett"-menyen og kamera
+  hooks/useSudokuBoard.ts    Tilstand og logikk for brettet (valg, tall, kandidater, angre,
+                             lagring), og hjelpefunksjoner for naboer, konflikter og feil tall
+  sudoku/                    Løser og generator
   scanner/                   Fra kamerabilde til 81 tall
   tools/labeling/            Merkeverktøyet for treningsdata (?label)
 public/
+  favicon.svg                App-ikonet (kilden til alle ikonene)
   models/digits/             Den trente modellen
   pwa-*.png, …               App-ikoner for PWA-en
 vite.config.ts               Vite- og PWA-oppsett
+pwa-assets.config.ts         Oppsett for å lage app-ikonene
+TODO.md                      Planlagte funksjoner og forbedringer
 ml/
   train.py                   Trener modellen
   export_tfjs.py             Eksporterer modellen til TensorFlow.js
