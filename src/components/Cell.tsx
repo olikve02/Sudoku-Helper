@@ -29,6 +29,7 @@ function Cell({
     hasConflict ? "cell-conflict" : "",
     sameValueAsSelected ? "cell-same-value" : "",
     isWrong ? "cell-conflict" : "",
+    cell.locked ? "cell-locked" : "",
   ];
 
   return (

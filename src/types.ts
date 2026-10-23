@@ -5,4 +5,5 @@ export type CellState = {
   value: number | null;
   candidates: number[];
   selected: boolean;
+  locked: boolean;
 };

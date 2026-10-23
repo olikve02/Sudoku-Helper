@@ -134,6 +134,7 @@ export default function useSudokuBoard() {
             value: puzzle[index],
             selected: false,
             candidates: [],
+            locked: true,
           };
         }
         return { ...cell, value: null, candidates: [], selected: false };
@@ -248,7 +249,14 @@ function createEmptyBoard(): CellState[] {
   const cells: CellState[] = [];
   for (let row = 1; row <= 9; row++) {
     for (let col = 1; col <= 9; col++) {
-      cells.push({ row, col, value: null, candidates: [], selected: false });
+      cells.push({
+        row,
+        col,
+        value: null,
+        candidates: [],
+        selected: false,
+        locked: false,
+      });
     }
   }
   return cells;
