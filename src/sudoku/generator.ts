@@ -1,11 +1,5 @@
 import { isValid } from "./solver";
 
-export function test() {
-  const board = new Array(81).fill(0);
-  fillRandom(board);
-  console.log(board);
-}
-
 function shuffle(numbers: number[]): number[] {
   return [...numbers].sort(() => Math.random() - 0.5);
 }

@@ -88,7 +88,7 @@ export default function useSudokuBoard() {
     } else {
       setSolution(null);
     }
-
+    setHistory([...history, cells]);
     setCells(
       cells.map((cell, index) => ({
         ...cell,
@@ -114,6 +114,7 @@ export default function useSudokuBoard() {
   function clearBoard() {
     if (confirm("Vil du tømme brettet")) {
       const newCells = createEmptyBoard();
+      setHistory([...history, cells]);
       setCells(newCells);
       setSolution(null);
     }
