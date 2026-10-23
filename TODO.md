@@ -14,16 +14,24 @@
 - [ ] **Tastatur på PC**: tallene 1–9, piltaster for å flytte, Backspace/Delete for å viske ut
 - [ ] **Gjør om (redo)**: motstykket til angre
 - [ ] **Timer** som går mens man løser (og pauser når appen er i bakgrunnen)
-- [ ] **Tester** med Vitest for de rene funksjonene: `isPeer`, `hasConflict`, `isWrong`, `completedNumbers`, `loadBoard`, og løseren (`solve`)
+- [ ] **Tester** med Vitest for de rene funksjonene: `isPeer`, `hasConflict`, `isWrong`, `completedNumbers`, `loadBoard`, løseren (`solve`) og generatoren (`generate` skal alltid gi én løsning)
+- [ ] **Zoom på brettet**: zoom bare brettet, så knappene står i ro. Enklest med en zoom-knapp (f.eks. 2×) og scrolling, eller kniping med `react-zoom-pan-pinch`. Sjekk først om større kandidater er nok
+
+## Design
+
+- [X] **Nytt design på hovedskjermen**: topplinje med "Nytt brett", avrundet brett, verktøyknapper med tekst, større tallknapper og egen farge i notatmodus. Alltid mørk modus
+- [X] **Nytt design på kameraet**: søkeramme med hjørner, mørkt område utenfor, stor utløserknapp, "Leser brettet…" mens bildet behandles, og lommelykt bare når telefonen støtter det
+- [X] **Eget app-ikon** (`public/favicon.svg`, lag PNG-ene med `npm run generate-icons`)
+- [ ] Test kameraet og lommelykta på en ekte telefon etter det nye designet
 
 ## Rydding
 
 - [X] Fjern `console.log` i `completedNumbers`
-- [ ] Fjern de to `localStorage.setItem`-linjene i `newGame`. `useEffect` lagrer allerede, og linja som lagrer `puzzle` under `"cells"` har feil format
+- [X] Fjern de to `localStorage.setItem`-linjene i `newGame`. `useEffect` lagrer allerede, og linja som lagrer `puzzle` under `"cells"` har feil format
 - [ ] Fjern `test()` i `generator.ts`
 - [ ] `newGame` og `setScannedValues` gjør nesten det samme (lager celler fra 81 tall, setter løsning, nullstiller). Lag én felles hjelpefunksjon
 - [ ] Bruk én konstant for hver `localStorage`-nøkkel (`"cells"` og `"solution"` står to steder hver)
-- [ ] `==`/`!=` → `===`/`!==` i `useSudokuBoard.ts`
+- [ ] `==`/`!=` → `===`/`!==` i `useSudokuBoard.ts` (fire steder: `enterNumber`, `isPeer` og `isPeerOfSameValueAsSelected`)
 - [ ] Del `useEffect` for lagring i én per verdi (`cells` og `solution`)
 
 ## Sudoku-logikk
