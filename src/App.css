@@ -20,6 +20,18 @@
   overflow: hidden;
 }
 
+/* Tall brukeren har satt inn selv: myk blå, så de skilles fra oppgaven */
+.sudoku-value {
+  color: #93c5fd;
+}
+
+/* Låste tall fra oppgaven (scanning eller generator): hvite og fete.
+   Står før reglene for samme tall og konflikt, så de fortsatt vinner. */
+.cell-locked .sudoku-value {
+  color: #f3f4f6;
+  font-weight: 700;
+}
+
 /* Samme tall som den valgte cella: lilla tall og svak lilla bakgrunn, uten ramme.
    Står før konfliktreglene, så rød tekst vinner hvis cella også er i konflikt. */
 .cell-same-value {
