@@ -17,6 +17,7 @@ import useSudokuBoard, { completedNumbers } from "./hooks/useSudokuBoard";
 import scanBoard from "./scanner/scanBoard";
 import LabelingTool from "./tools/labeling/LabelingTool";
 import "./App.css";
+import useTimer from "./hooks/useTimer";
 
 // Merkeverktøyet for treningsdata åpnes med ?label i adressen
 const showLabelingTool = new URLSearchParams(window.location.search).has(
@@ -28,7 +29,7 @@ type Screen = "board" | "camera";
 function App() {
   const [screen, setScreen] = useState<Screen>("board");
   const board = useSudokuBoard();
-
+  const timer = useTimer();
   if (showLabelingTool) {
     return <LabelingTool />;
   }
@@ -41,8 +42,12 @@ function App() {
             <h1 className="app-title">
               Sudoku <span>Helper</span>
             </h1>
+            <span className="timer">{timer.time}</span>
             <NewGameMenu
-              onNewGame={board.newGame}
+              onNewGame={(givens) => {
+                board.newGame(givens);
+                timer.restart();
+              }}
               onScan={() => setScreen("camera")}
             />
           </header>
