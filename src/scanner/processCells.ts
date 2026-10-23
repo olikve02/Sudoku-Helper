@@ -16,7 +16,10 @@ const MIN_CONTRAST = 45; // svakere enn dette = tom celle
 const LOOSE_RATIO = 0.35; // løs terskel: 35 % av veien fra papir mot mørkeste blekk
 const LOOSE_RANGE = [205, 228]; // ...men aldri utenfor dette området
 const STRONG_RATIO = 0.6; // en komponent må ha noen piksler mørkere enn dette
-const STRONG_MAX = 195;
+// ...men aldri lysere enn dette. Var 195, men da ble svakt skrevne tall (mørkeste
+// punkt rundt 199) visket helt bort. 205 slipper dem gjennom, uten at skygger og
+// gjennomskinn fra baksiden av arket blir lest som tall (testet på bok-bildene)
+const STRONG_MAX = 205;
 const MIN_STRONG_PIXELS = 4;
 const EDGE_ZONE = 0.08; // komponenter innenfor 8 % av kanten kan være linjerester
 const THIN = 0.18; // en linjerest er smalere enn 18 % av cella...
