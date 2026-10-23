@@ -1,7 +1,17 @@
 import Box from "@mui/material/Box";
 import { ArrowLeft, Flashlight, FlashlightOff, LoaderCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import "./CameraScanner.css";
+
+// Venter til nettleseren har tegnet skjermen. Den første requestAnimationFrame
+// kjører rett før neste tegning, den andre rett etter at den er ferdig.
+// Er siden skjult, tegnes ingenting, så da gir vi opp etter 100 ms
+const waitForPaint = () =>
+  new Promise<void>((resolve) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+    setTimeout(resolve, 100);
+  });
 
 type CameraScannerProps = {
   onCapture: (
@@ -125,7 +135,12 @@ function CameraScanner({ onCapture, onBack }: CameraScannerProps) {
   async function capture() {
     if (!videoRef.current || !guideBoxRef.current) return;
 
-    setScanning(true);
+    // Vis "Leser brettet…" og vent til nettleseren faktisk har tegnet det.
+    // Bildebehandlingen etterpå blokkerer siden helt til den er ferdig, så uten
+    // denne ventingen rekker ikke overlayet å vises før skjermen byttes
+    flushSync(() => setScanning(true));
+    await waitForPaint();
+
     try {
       await onCapture(videoRef.current, guideBoxRef.current);
     } finally {
