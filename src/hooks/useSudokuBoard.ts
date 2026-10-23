@@ -43,7 +43,7 @@ export default function useSudokuBoard() {
     const newCells = cells.map((cell) => {
       if (cell.selected) {
         if (!candidateMode) {
-          return { ...cell, value: number };
+          return { ...cell, value: cell.value === number ? null : number };
         }
 
         const candidates = cell.candidates.includes(number)
