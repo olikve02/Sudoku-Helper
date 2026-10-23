@@ -41,6 +41,7 @@ export default function useSudokuBoard() {
     const selectedCells = cells.filter((cell) => cell.selected == true);
 
     const newCells = cells.map((cell) => {
+      if (cell.locked) return cell;
       if (cell.selected) {
         if (!candidateMode) {
           return { ...cell, value: cell.value === number ? null : number };
@@ -88,21 +89,21 @@ export default function useSudokuBoard() {
     } else {
       setSolution(null);
     }
-    setHistory([...history, cells]);
+    setHistory([]);
     setCells(
       cells.map((cell, index) => ({
         ...cell,
         value: digits[index] ? digits[index] : null,
         candidates: [],
         selected: false,
-        locked: cell.value ? true : false,
+        locked: digits[index] > 0 ? true : false,
       })),
     );
   }
   //Fjerner alt i cellene som er markert
   function erase() {
     const newCells = cells.map((cell) => {
-      if (cell.selected) {
+      if (cell.selected && !cell.locked) {
         return { ...cell, value: null, candidates: [] };
       } else {
         return cell;
@@ -115,7 +116,7 @@ export default function useSudokuBoard() {
   function clearBoard() {
     if (confirm("Vil du tømme brettet")) {
       const newCells = createEmptyBoard();
-      setHistory([...history, cells]);
+      setHistory([]);
       setCells(newCells);
       setSolution(null);
     }
@@ -138,7 +139,13 @@ export default function useSudokuBoard() {
             locked: true,
           };
         }
-        return { ...cell, value: null, candidates: [], selected: false };
+        return {
+          ...cell,
+          value: null,
+          candidates: [],
+          selected: false,
+          locked: false,
+        };
       }),
     );
     setHistory([]);

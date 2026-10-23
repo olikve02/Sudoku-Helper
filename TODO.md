@@ -3,7 +3,8 @@
 ## Neste opp
 
 - [X] **Nytt / tømt brett**: knapp som tømmer hele brettet (med bekreftelse). Nå som brettet lagres i `localStorage`, er scanning eneste måte å starte på nytt
-- [ ] **Lås gitte tall** ⚠️: tall fra scanning og generatoren kan ikke viskes ut eller overskrives. Nytt felt `given: boolean` i `CellState`, vises i egen farge. Viktig nå som generatoren finnes, ellers kan oppgaven viskes ut
+- [X] **Lås gitte tall**: tall fra scanning og generatoren kan ikke viskes ut eller overskrives (`locked` i `CellState`). Låste tall er hvite og fete (`cell-locked`), egne tall er blå
+- [X] **Fjern tall ved å trykke samme tall igjen**
 - [ ] **Bekreft før nytt brett**: spør med `confirm` (som i `clearBoard`) før "Nytt brett" overskriver brettet man holder på med
 - [ ] **Ferdig-skjerm**: når alle 81 celler er fylt og ingen er i konflikt, vis gratulasjon (og tid, hvis timer er laget)
 - [ ] **Fyll inn alle kandidater**: knapp som setter alle lovlige kandidater i tomme celler (bruk `isPeer`)
@@ -28,7 +29,8 @@
 
 - [X] Fjern `console.log` i `completedNumbers`
 - [X] Fjern de to `localStorage.setItem`-linjene i `newGame`. `useEffect` lagrer allerede, og linja som lagrer `puzzle` under `"cells"` har feil format
-- [ ] Fjern `test()` i `generator.ts`
+- [X] Fjern `test()` i `generator.ts`
+- [ ] `digits[index] > 0 ? true : false` → `digits[index] > 0` i `setScannedValues`
 - [ ] `newGame` og `setScannedValues` gjør nesten det samme (lager celler fra 81 tall, setter løsning, nullstiller). Lag én felles hjelpefunksjon
 - [ ] Bruk én konstant for hver `localStorage`-nøkkel (`"cells"` og `"solution"` står to steder hver)
 - [ ] `==`/`!=` → `===`/`!==` i `useSudokuBoard.ts` (fire steder: `enterNumber`, `isPeer` og `isPeerOfSameValueAsSelected`)
@@ -37,9 +39,9 @@
 ## Sudoku-logikk
 
 1. [X] **Løser** (`src/sudoku/solver.ts`): backtracking på `number[]` med 81 tall (0 = tom). Rene funksjoner som `isValid` og `solve`, ingen React
-2. [X] **Marker feil tall**: løsningen regnes ut ved scanning og lagres i `localStorage`. Tall som ikke stemmer med løsningen vises som konflikter (`cell-conflict`)
-   - [ ] Tøm angre-historikken (`setHistory([])`) ved scanning og "Tøm brett", så angre ikke hopper tilbake til et gammelt brett (`newGame` gjør det allerede)
-   - [ ] Virker bare på scannede brett. For brett som tastes inn for hånd trengs "Lås gitte tall" først, så løsningen kan regnes ut fra de gitte tallene
+2. [X] **Marker feil tall**: løsningen regnes ut ved scanning (eller kommer fra generatoren) og lagres i `localStorage`. Tall som ikke stemmer med løsningen vises som konflikter (`cell-conflict`)
+   - [X] Tøm angre-historikken (`setHistory([])`) ved scanning, "Tøm brett" og "Nytt brett", så angre ikke hopper tilbake til et gammelt brett med feil løsning
+   - [ ] Brett som tastes inn for hånd har ingen løsning. Lag en knapp "Lås og start" som låser tallene som står, og regner ut løsningen med `solve` (nå som `locked` finnes)
 3. [ ] **Feil tall på det scannede brettet**: et feil tall som allerede er skrevet på papiret (eller lest feil av scanneren) gjør at brettet ikke kan løses, eller gir feil løsning
    - [ ] Varsle brukeren når det scannede brettet ikke kan løses
    - [ ] Sjekk de gitte tallene med `isValid` før `solve` (nå sjekker løseren bare tallene den setter inn selv)
@@ -51,7 +53,7 @@
    - [X] Tell løsninger: `countSolutions`, gir seg ved 2
    - [X] Fjern tall i tilfeldig rekkefølge. Får brettet mer enn én løsning, legg tallet tilbake (`generate`)
    - [X] "Nytt brett"-meny med vanskelighetsgrad og scanning (`NewGameMenu.tsx`)
-   - [ ] Lås gitte tall bør være på plass, ellers kan oppgaven viskes ut (se "Neste opp")
+   - [X] Gitte tall er låst
    - [ ] `shuffle` med Fisher–Yates i stedet for `sort(() => Math.random() - 0.5)` (valgfritt, gir jevnere tilfeldighet)
    - [ ] Raskere `countSolutions`, hvis det skal gå under 26 tall. Nå tar 26 tall ca. 0,4 s og 22 tall ca. 4 s
 6. [X] **Vanskelighetsgrad, enkel**: lett = 40, middels = 32, vanskelig = 26 gitte tall. Unøyaktig, fordi vanskeligheten avhenger av *hvor* tallene står. Under ca. 24 når ikke generatoren alltid ned, fordi alle tallene som er igjen er nødvendige
